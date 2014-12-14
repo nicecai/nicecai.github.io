@@ -1,0 +1,509 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>NSIS进阶教程(三) - 一个人的时间简史</title>
+  <meta name="author" content="烂菜">
+
+  
+  <meta name="description" content="自定义MessageBox，自定义页跳转，自定义CheckBox样式 前言 上一节中我们处理了Button的自定义以及Button的事件消息、协议框的创建等等，这节中我们要更加完美的要求我们的提示框也要漂亮，CheckBox也要自定义样式。 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://nicecai.github.io/blog/2013/05/26/learn-nsis-step-by-step-custommsgbox">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="一个人的时间简史" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">一个人的时间简史</a></h1>
+  
+    <h2>陌上花开</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:nicecai.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/blog/about">About Me</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">NSIS进阶教程(三)</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-05-26T11:09:00+08:00" pubdate data-updated="true">May 26<span>th</span>, 2013</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h3>自定义MessageBox，自定义页跳转，自定义CheckBox样式</h3>
+
+<h2>前言</h2>
+
+<blockquote><p>上一节中我们处理了Button的自定义以及Button的事件消息、协议框的创建等等，这节中我们要更加完美的要求我们的提示框也要漂亮，CheckBox也要自定义样式。有人说MessageBox在NSIS默认情况下是带边框的API窗口，是一个比较丑雏形，但是NSIS的nsDialogs插件也没有提供一个可以创建弹出窗的命令行呀，CheckBox系统自带的只能是那个默认的皮肤，如果想把CheckBox的背景改成蓝色，或者把CheckBox的勾改成爱心，把叉改成骷髅头如何去做呢？这些问题在任何一个面向对象的编程语言中都可以很容易实现，在NSIS这样局限的环境中也可以变通实现，接下来我们处理一下这些问题。</p></blockquote>
+
+<h2>本篇主要讲讲以下几点：</h2>
+
+<ul>
+<li><p><strong>如何抛弃系统的MessageBox</strong></p></li>
+<li><p><strong>如何实现自定义页面的跳转</strong></p></li>
+<li><p><strong>如何用自己的贴图实现CheckBox功能</strong></p></li>
+</ul>
+
+
+<p><strong>所用到的插件【新增】：</strong></p>
+
+<ol>
+<li><p>FindProcDLL（查找当前进程插件）</p></li>
+<li><p>KillProcDLL （关闭指定进程插件）</p></li>
+</ol>
+
+
+<!--more-->
+
+
+<p><strong>讲义</strong></p>
+
+<p><strong>首先贴出一个今天教程的完整的例子【已测试】【附带图片】 <a href="https://github.com/nicecai/nsissource/tree/master/3" title="例子下载">猛击这里</a></strong></p>
+
+<p><em>题外话，本节的重点是如何把系统的MessageBox替换掉自定义的窗口，一开始这个命题挺难的，原本因为nsDialogs可以创建一个弹窗，然后给它披上一层皮就可以了，在查了很多资料后，我了解到根本不行，nsDialogs插件不能完成这么简单的工作，而是通过另一个插件nsWindows来完成。另一个自定义CheckBox功能还是有点讨巧的，其实在窗体编程中，Button跟CheckBox本质上是一样的东西，CheckBox就是Button披上一层皮加上一些单击事件改变皮肤而存在的，于是就有了CheckBox的自定义的可能性。</em></p>
+
+<p><em>还是要讲一点不足，此处CheckBox不包含旁边的说明文字，也就是说，当你促发CheckBox旁边的文字某些事件的时候CheckBox本事不会有任何反应，这样就不能构成一个CheckBox的整体，不过对于要求不是非常高的人来说，这点完全可以忽略。</em></p>
+
+<h2>如何抛弃系统的MessageBox</h2>
+
+<p>通常在使用警告框的时候，我们会调用MessageBox的NSIS命令，然而此窗口无比丑陋，简直是对我们正在做的窗体的亵渎。于是我们自己创建警告框，此警告框也要跟我们已有的窗口风格一致，包含几大问题，“无边框”、“美观贴图”、“移动”、“逻辑判断功能”，做到以上几点就可以了。上代码：</p>
+
+<pre><code>Function onCancel
+    IsWindow $WarningForm Create_End
+    !define Style ${WS_VISIBLE}|${WS_OVERLAPPEDWINDOW}
+    ${NSW_CreateWindowEx} $WarningForm $hwndparent ${ExStyle} ${Style} "" 1018
+
+    ${NSW_SetWindowSize} $WarningForm 349 184
+    EnableWindow $hwndparent 0
+    System::Call `user32::SetWindowLong(i$WarningForm,i${GWL_STYLE},0x9480084C)i.R0`
+    ${NSW_CreateButton} 148 122 88 25 ''
+    Pop $R0
+    StrCpy $1 $R0
+    Call SkinBtn_Quit
+    ${NSW_OnClick} $R0 OnClickQuitOK
+
+    ${NSW_CreateButton} 248 122 88 25 ''
+    Pop $R0
+    StrCpy $1 $R0
+    Call SkinBtn_Cancel
+    ${NSW_OnClick} $R0 OnClickQuitCancel
+
+    ${NSW_CreateBitmap} 0 0 100% 100% ""
+    Pop $BGImage
+  ${NSW_SetImage} $BGImage $PLUGINSDIR\quit.bmp $ImageHandle
+    GetFunctionAddress $0 onWarningGUICallback
+    WndProc::onCallback $BGImage $0 ;处理无边框窗体移动
+  ${NSW_CenterWindow} $WarningForm $hwndparent
+    ${NSW_Show}
+    Create_End:
+  ShowWindow $WarningForm ${SW_SHOW}
+FunctionEnd
+</code></pre>
+
+<p>这个<code>onCancel</code>方法是在我们在主窗体上点击“取消”或者“关闭”的时候促发的方法，这时会弹出一个命令窗口出来。</p>
+
+<p>创建跟设置样式：<code>WS_VISIBLE</code>  是显示的意思，不加会隐藏掉，<code>WS_OVERLAPPEDWINDOW</code>  是创建一个层叠窗体的属性也需要加上。<code>NSW_CreateWindowEx</code> 是创建窗体的主命令。</p>
+
+<p>创建完窗体后，用<code>NSW_SetWindowSize</code>  更改一下窗体的大小。</p>
+
+<p><code>EnableWindow $hwndparent 0</code>这段代码一定要加上，这是创建一个警告框模式窗体的必要条件，就是让主窗体不能操作。</p>
+
+<p>接下来就是消除边框，用<code>nsWindows</code>命令创建按钮的一套，跟<code>nsDialogs</code>的创建是一致的，包括无边框移动的一套，在第一节中已经讲过，这里就不啰嗦了。</p>
+
+<p>最后把这个窗体展示出来就可以了。把这个<code>onCancel</code>这个方法赋给“取消”按钮的单击事件，这样一个无边框模式窗体警告框就好了。</p>
+
+<p><img src="http://m3.img.libdd.com/farm4/192/463CC65762D1D65071C86536FAE31FC0_511_350.JPEG" title="自定义弹出框" alt="&quot;自定义弹出框&quot;" /></p>
+
+<p>当我们点击“退出”的时候，就要关掉当前程序，所以要添加一个关闭的方法：</p>
+
+<pre><code>Function onClickClose
+    FindProcDLL::FindProc "test.exe"
+    Sleep 500
+    Pop $R0
+    ${If} $R0 != 0
+    KillProcDLL::KillProc "test.exe"
+    ${EndIf}
+FunctionEnd
+</code></pre>
+
+<p>通过<code>FindProcDLL</code>插件的<code>FindProc</code>方法找到安装进程，并且通过<code>KillProcDLL</code>插件的<code>KillProc</code>杀之。</p>
+
+<p>当我们点击“取消”的时候，这时候需要关闭当前警告框，并且让主窗体能够处于Active状态</p>
+
+<pre><code>Function OnClickQuitCancel
+  ${NSW_DestroyWindow} $WarningForm
+  EnableWindow $hwndparent 1
+  BringToFront
+FunctionEnd
+</code></pre>
+
+<p><code>NSW_DestroyWindow</code>命令销毁掉警告框，使主窗体能活动，并且<code>Bring</code>到前端。</p>
+
+<h2>如何实现自定义页面的跳转</h2>
+
+<p>一开始我们就定义了两个自定义页面：</p>
+
+<pre><code>Page custom WelcomePage
+Page custom InstallationPage
+</code></pre>
+
+<p>从<code>WelcomePage</code>跳转到<code>InstallationPage</code>，这个就是<code>下一步</code>按钮的事件。</p>
+
+<p>创建一个<code>RelGotoPage</code>方法：</p>
+
+<pre><code>Function RelGotoPage
+  IntCmp $R9 0 0 Move Move
+    StrCmp $R9 "X" 0 Move
+      StrCpy $R9 "120"
+  Move:
+  SendMessage $HWNDPARENT "0x408" "$R9" ""
+FunctionEnd
+</code></pre>
+
+<p>详细解释在这里 <a href="http://nsis.sourceforge.net/Go_to_a_NSIS_page" title="gotoansispage">http://nsis.sourceforge.net/Go_to_a_NSIS_page</a></p>
+
+<blockquote><p>If a number > 0: Goes foward that number of pages. Code of that page will be executed, not returning to this point. If it is bigger than the number of pages that are after that page, it simulates a &ldquo;Cancel&rdquo; click.</p>
+
+<p>If a number &lt; 0: Goes back that number of pages. Code of that page will be executed, not returning to this point. If it is bigger than the number of pages that are before that page, it simulates a &ldquo;Cancel&rdquo; click.</p>
+
+<p>If X: Simulates a &ldquo;Cancel&rdquo; click. Code will go to callback functions, not returning to this point.</p>
+
+<p>If 0: Continues on the same page. Code will still be running after the call.</p></blockquote>
+
+<p>在<code>下一步</code>的单击事件中加入以下代码，跳转就好了，而且以后的调转RelGotoPage都适用</p>
+
+<pre><code>Function onClickNext
+  StrCpy $R9 1
+  Call RelGotoPage
+  Abort
+FunctionEnd
+</code></pre>
+
+<h2>如何用自己的贴图实现CheckBox功能</h2>
+
+<p><code>CheckBox</code>也有系统自带的那种健全的，但是效果没有<code>Button</code>贴皮肤后好，所以弃用之，在第二个页面中创建几个<code>Button</code>跟标签：</p>
+
+<pre><code>${NSD_CreateButton} 26 150 15 15 ""
+    Pop $Ck_ShortCut
+    StrCpy $1 $Ck_ShortCut
+    Call SkinBtn_Checked
+    GetFunctionAddress $3 OnClick_CheckShortCut
+    SkinBtn::onClick $1 $3
+    StrCpy $Bool_ShortCut 1
+    ${NSD_CreateLabel} 45 151 100 15 "添加桌面快捷方式"
+    Pop $Lbl_ShortCut
+    SetCtlColors $Lbl_ShortCut ""  transparent ;背景设成透明
+</code></pre>
+
+<p>创建<code>CheckBox</code>的时候要考虑周全，首先要定义该<code>CheckBox</code>的变量，该<code>CheckBox</code>的皮肤，记录该<code>CheckBox</code>状态的变量<code>$Bool_ShortCut</code>，该<code>CheckBox</code>旁边的提示文字变量<code>$Lbl_ShortCut</code></p>
+
+<p><img src="http://m2.img.libdd.com/farm5/21/746DB83C38C5A17BDD21506D6D3DF615_15_75.jpg" title="自定义Checkbox" alt="&quot;自定义Checkbox&quot;" /></p>
+
+<p><img src="http://m1.img.libdd.com/farm5/248/604441F84638FEF06106931B3A6A6EF8_15_75.jpg" title="自定义Checkbox" alt="&quot;自定义Checkbox&quot;" /></p>
+
+<p>Button的贴图跟变换方式在第二节中已经介绍，这里就不啰嗦。</p>
+
+<p>这里的<code>OnClick_CheckShortCut</code>方法不仅仅是一个变换的实现，也通过<code>$Bool_ShortCut</code>记录了当前<code>CheckBox</code>的状态</p>
+
+<pre><code>Function OnClick_CheckShortCut
+  ${IF} $Bool_ShortCut == 1
+        IntOp $Bool_ShortCut $Bool_ShortCut - 1
+        StrCpy $1 $Ck_ShortCut
+        Call SkinBtn_UnChecked
+    ${ELSE}
+        IntOp $Bool_ShortCut $Bool_ShortCut + 1
+        StrCpy $1 $Ck_ShortCut
+        Call SkinBtn_Checked
+    ${EndIf}
+FunctionEnd
+</code></pre>
+
+<p>最后我们在完成安装的时候，可以通过<code>$Bool_ShortCut</code>该变量来了解用户的选择</p>
+
+<p><img src="http://m2.img.libdd.com/farm4/125/5E2EF978988C13590D44C1E66D174D7D_524_348.JPEG" title="整体图" alt="&quot;整体图&quot;" /></p>
+
+<p><strong>结束语</strong></p>
+
+<p>其实不难，逻辑清晰，知道自己朝哪个方向去寻找答案，一切就会云开雾散。希望大家能学到一些。</p>
+
+<p>***************************************************************************</p>
+
+<p>有任何疑问请留言。</p>
+
+<p>That&rsquo;s all</p>
+
+<p>下回继续探讨</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">烂菜</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-05-26T11:09:00+08:00" pubdate data-updated="true">May 26<span>th</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/nsis/'>NSIS</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://nicecai.github.io/blog/2013/05/26/learn-nsis-step-by-step-custommsgbox/" data-via="aaronckj" data-counturl="http://nicecai.github.io/blog/2013/05/26/learn-nsis-step-by-step-custommsgbox/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/05/25/learn-nsis-step-by-step-custombutton/" title="Previous Post: NSIS进阶教程(二)">&laquo; NSIS进阶教程(二)</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2013/05/26/learn-nsis-step-by-step-customprogress/" title="Next Post: NSIS进阶教程(四)">NSIS进阶教程(四) &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>About Me</h1>
+<img src="/images/me.png"  alt="me"/>
+  <p>永远Beta</p>
+</section>
+<section>
+<h2>Reading&&Watching</h2>
+<div>
+<script type="text/javascript" src="http://www.douban.com/service/badge/pylife/?show=collection&amp;n=12&amp;columns=3&amp;hidelogo=yes" ></script>
+</div>
+</section><iframe width="100%" height="550" class="share_self"  frameborder="0" scrolling="no" src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=550&fansRow=2&ptype=1&speed=300&skin=2&isTitle=0&noborder=1&isWeibo=1&isFans=0&uid=1829155814&verifier=f1d7678d&dpc=1"></iframe>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/11/03/use-python-to-publish-e-book/">Use Python to Publish E-book</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/05/26/nsis-slash-learn-nsis-step-by-step-setuponline/">NSIS进阶教程(五)</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/05/26/learn-nsis-step-by-step-customprogress/">NSIS进阶教程(四)</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/05/26/learn-nsis-step-by-step-custommsgbox/">NSIS进阶教程(三)</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/05/25/learn-nsis-step-by-step-custombutton/">NSIS进阶教程(二)</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/nicecai">@nicecai</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'nicecai',
+            count: 1,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+<section class="googleplus">
+  <h1>
+    <a href="https://plus.google.com/aaronckj?rel=author">
+      <img src="http://www.google.com/images/icons/ui/gprofile_button-32.png" width="32" height="32">
+      Google+
+    </a>
+  </h1>
+</section>
+
+
+﻿<section>
+<h1>友情链接</h1>
+<a href="http://xwf.me">@桃花嘟嘟熊</a>
+<a href="http://blog.csdn.net/shuijing_0">@水晶石</a>
+</section>
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - 烂菜 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'hamletsoft';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://nicecai.github.io/blog/2013/05/26/learn-nsis-step-by-step-custommsgbox/';
+        var disqus_url = 'http://nicecai.github.io/blog/2013/05/26/learn-nsis-step-by-step-custommsgbox/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

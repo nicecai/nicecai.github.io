@@ -1,0 +1,494 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>NSIS进阶教程(五) - 一个人的时间简史</title>
+  <meta name="author" content="烂菜">
+
+  
+  <meta name="description" content="在线下载，下载后的安装，本地解压安装 前言 想做在线安装包教程已经很久了，一直找不到合适的时间，如今在一个慵懒的周末早晨终于开始了。今天晚上还要去虹口体育场看申花跟国安的比赛，还是要抓紧时间呀。
+在线安装是以前教程的一个延续。 意义一： &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://nicecai.github.io/blog/2013/05/26/nsis-slash-learn-nsis-step-by-step-setuponline">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="一个人的时间简史" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">一个人的时间简史</a></h1>
+  
+    <h2>陌上花开</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:nicecai.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/blog/about">About Me</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">NSIS进阶教程(五)</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-05-26T12:24:00+08:00" pubdate data-updated="true">May 26<span>th</span>, 2013</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h3>在线下载，下载后的安装，本地解压安装</h3>
+
+<h2>前言</h2>
+
+<blockquote><p>想做在线安装包教程已经很久了，一直找不到合适的时间，如今在一个慵懒的周末早晨终于开始了。今天晚上还要去虹口体育场看申花跟国安的比赛，还是要抓紧时间呀。
+在线安装是以前教程的一个延续。</p>
+
+<p><strong><code>意义一：</code></strong>国内很多的IT厂商在做安装包的时候首先考虑的是用户下载的时间可接受度，而一个动辄100mb的包会把用户吓跑，而且下载的入口还控制在诸如迅雷，旋风，IE，等等，稍等，还有360安全浏览器。。。你如果没有给360打个招呼，它说不定会报你的程序有毒。。。太可拍了。入口最重要，掌握在任何人手里都会成为收门票的工具。</p>
+
+<p><strong><code>意义二：</code></strong>用户对着迅雷，旋风的界面，千遍一律，没有任何信息的展示，就是一个进度条，你丧失了在第一时间占领用户意识的契机。如果你在安装的时候有动画播放，并且让用户在安装的过程中获取产品的使用技巧，或者像广告植入一样的严肃的对待这个不起眼的时间，你会收获很多。</p></blockquote>
+
+<h2>本篇主要讲讲以下几点：</h2>
+
+<ul>
+<li><p><strong>在线下载</strong></p></li>
+<li><p><strong>下载后的安装</strong></p></li>
+<li><p><strong>下载后的解压</strong></p></li>
+</ul>
+
+
+<p><strong>所用到的插件【新增】：</strong></p>
+
+<ol>
+<li>inetc</li>
+<li>nsis7z</li>
+</ol>
+
+
+<!--more-->
+
+
+<p><strong>讲义</strong></p>
+
+<p><strong>首先贴出今天教程的完整的例子【已测试】【附带图片】 <a href="https://github.com/nicecai/nsissource/tree/master/5" title="例子下载">猛击这里</a></strong></p>
+
+<blockquote><p>题外话:最终还是决定把所有源码转移到Github上面，虽然前段时间也被GFW给封了一下，但是还是不能影响我对Git以及开源项目的热情。我相信开放的才是最光明的。</p></blockquote>
+
+<p><em>这次教程主要处理在线安装的问题，所谓的在线安装，必须要有下载和安装两部分组成，安装又分为执行或者解压两个部分，这次一次性的把安装跟解压都跟大家探讨一下</em></p>
+
+<h2>在线下载</h2>
+
+<p>我摸索了一下<code>NSIS</code>的插件，最终确定用<code>Intec</code>，其他的也都看过，不是功能不适合就是我没有找到源码，选择<code>Intec</code>其实也是勉强而为之，因为它的3个下载的样式都不适合自定义界面的要求，因为它的进度条，它的百分比都是自己已经全部包装好了的。对着丑的惨不忍睹的界面，只有叹气的份了。</p>
+
+<p>怎么办？</p>
+
+<p>只能改源码，打开<code>Intec</code>插件的<strong><a href="http://nsis.sourceforge.net/mediawiki/images/c/c9/Inetc.zip" title="Intec源码"><code>C++</code>源码</a></strong>，修改两点：</p>
+
+<ol>
+<li>把它<code>Dialog</code>中的<code>ProgressBar</code>给隐藏掉，或者你直接把该<code>Dialog</code>给<code>Hide</code>掉也可以。</li>
+<li>修改其中的传值，如果你的自定义页面<code>CustomPage</code>中需要有多处地方需要统一的显示百分比进度的话需要在调用<code>Intec</code>的时候多传一些控件进去。你就可以在代码中修改</li>
+</ol>
+
+
+<p>因为我需要的只是一个进度的返回，以及<code>ProgressBar</code>的反应，所以所有的<code>Intec</code>的界面都被我<code>Hide</code>掉了，这里就不再贴源码了，因为我也找不到了，只找到当初<code>Release</code>出来的一个<code>Dll</code>，在给的源码包中。所有的传值方式都跟官方原版中的Intec是一样的，只是在参数中多加了几个外部组件的传入入口。</p>
+
+<p>By the way想改源码的童鞋，这个Intec的源码必须在VC6下编译，VC2005及以上编译出来的在有些平台下会有异常。
+嫌麻烦的话直接用给的也可以，照着例子中的调用即可。</p>
+
+<p>上代码：</p>
+
+<pre><code>inetc::get /hwnd $PPercent /hwnd2 $PPercent /probar $PB_ProgressBar /caption " " /popup "" "http://download.microsoft.com/download/c/6/e/c6e88215-0178-4c6c-b5f3-158ff77b1f38/NetFx20SP2_x64.exe" "$TEMP\NetFx20SP2_x64.exe"  /end
+Pop $0
+${If} $0 == "Transfer Error"
+  ;MessageBox MB_OK "net64err"
+    Call onClickClose
+    Abort
+${ELSEIF} $0 == "SendRequest Error"
+    ;MessageBox MB_OK "net64err2"
+    Call onClickClose
+    Abort
+${ELSE}
+    ;System::Call "user32::InvalidateRect(i $hwndparent,i0,i 1)"
+    Call NFInstall64
+${EndIf}
+</code></pre>
+
+<p>其中<code>/hwnd</code> <code>/hwnd2</code> <code>/probar</code>都是自定义界面上面的组件传入参数，后面紧跟的都是自己创建的<code>Label</code>跟<code>Progress</code>:<code>$PPercent</code> <code>$PB_ProgressBar</code></p>
+
+<p>下载完成后有返回值一般等于<code>OK</code>即可，但是经测试不能用唯一正确的<code>OK</code>来判别，因为有可能下载正确但是返回值不是<code>OK</code>，我就用了两个最严重的错误来判别，其他的就算是下载正确了。
+下载到<code>$TEMP</code>文件夹中，该文件夹在系统盘临时目录中，你测试的时候也可以直接设定一个目录，查看下载情况。
+下载就说到这里。</p>
+
+<h2>下载后的安装</h2>
+
+<p>这里的安装当然是指譬如微软的msi，微软的exe，或者是某些可执行程序。如果你需要执行这些后缀的程序的话，最好先了解一下该执行程序所依靠的环境。例子中是用<code>.net framework 2.0 sp2</code>做的例子，该执行程序需要依靠<code>Microsoft Installer 3.1</code>的安装环境，所以例子中在这一点也做了检测，譬如安装该执行程序所需的硬盘空间，在例子中也有体现，详情可以看代码。</p>
+
+<p><code>.net framework 2.0 sp2</code>的安装一般人都不希望弹出对话框出来，所以需要静默安装。</p>
+
+<pre><code>nsExec::ExecToStack '"$TEMP\NetFx20SP2_x64.exe" /q /c:"install.exe /noaspupgrade /q"'
+Pop $0
+${If} $0 == "timeout"
+    Call onClickClose
+    Abort
+${EndIf}
+;MessageBox MB_OK "net64inst2"
+${If} $0 == "error"
+    ;MessageBox MB_OK "net64inst1111111"
+    Call onClickClose
+    Abort
+${EndIf}
+
+Delete "$TEMP\NetFx20SP2_x64.exe"
+</code></pre>
+
+<p>参数<code>/q /c:"install.exe /noaspupgrade /q"</code>是该执行程序的静默安装方式。
+Pop出来的$0是安装结果，只有没有安装过的机器才能安装，安装过的机器都会报错，所以在安装.net framework之前需要读注册表判断一下是否安装过，例子中有。</p>
+
+<pre><code>Function NFEnvironmentCheck
+    ReadRegStr $1 HKLM "Hardware\Description\System\CentralProcessor\0" Identifier
+    StrCpy $2 $1 3
+    ${If} $2 == 'x86'
+        ReadRegStr $7 HKLM 'SOFTWARE\Microsoft\Windows NT\CurrentVersion' CurrentVersion
+        ReadRegStr $8 HKLM 'SOFTWARE\Microsoft\NET Framework Setup\NDP\v2.0.50727' Install
+        ReadRegStr $9 HKLM 'SOFTWARE\Microsoft\NET Framework Setup\NDP\v2.0.50727' SP
+    ${Else}
+        SetRegView 64
+        ReadRegStr $7 HKLM 'SOFTWARE\Microsoft\Windows NT\CurrentVersion' CurrentVersion
+        ReadRegStr $8 HKLM 'SOFTWARE\Microsoft\NET Framework Setup\NDP\v2.0.50727' Install
+        ReadRegStr $9 HKLM 'SOFTWARE\Microsoft\NET Framework Setup\NDP\v2.0.50727' SP
+        SetRegView lastused
+    ${EndIf}
+
+    ${If} $7 == '6.2'   ;Win8
+    ${OrIf} $7 == '6.1' ;Win7
+        ;判断是否装了.net framework 2.0 sp2
+        ${If} $8 == 1
+        ${AndIf} $9 == 2
+
+        ${Else}
+            ;GetFunctionAddress $0 DisplayNFLabel
+            ;BgWorker::CallAndWait
+            ${If} $2 == 'x86'
+                StrCpy $ISNETF 1
+            ${Else}
+              StrCpy $ISNETF 1
+            ${EndIf}
+        ${EndIf}
+
+    ${ElseIf} $7 == '6.0' ;WinVista
+    ${OrIf} $7 == '5.2'  ;Win2003
+    ${OrIf} $7 == '5.1'  ;WinXP
+    ${OrIf} $7 == '5.0'  ;Win2000
+        ;判断是否装了.net framework 2.0 sp2
+        ${If} $8 == 1
+        ${AndIf} $9 == 2
+
+        ${Else}
+            ${If} $2 == 'x86'
+                StrCpy $ISNETF 1
+            ${Else}
+              StrCpy $ISNETF 1
+      ${EndIf}
+        ${EndIf}
+    ${EndIf}
+FunctionEnd
+</code></pre>
+
+<p>最后删除<code>TEMP</code>文件夹中的临时文件
+整个安装过程就是这样的了。</p>
+
+<h2>下载后的解压</h2>
+
+<p>这一部分所需要解决的问题就是当用户需要下载自己的程序进行安装的时候，又不能自己再做一个msi的安装包吧，这样可以但是很麻烦，于是乎就直接用压缩的方式吧，这样方便。放眼压缩界7z绝对算是一个奇葩，有人做过统计，7z的压缩比是综合最好的，虽然压缩的时候比其他的压缩算法慢，但是解压却是差不多。幸好NSIS也有7z的<a href="http://nsis.sourceforge.net/Nsis7z_plug-in" title="7z插件">插件</a>
+在所有工作准备好之前，你需要把你的程序通过客户端自己的7z开源软件压缩好，并且放在一个服务器上面以供下载之用。
+例子中，我直接用的是7z官方的地址，作为我需要安装的软件。
+下载跟之前的是一样的，这里只说解压：</p>
+
+<pre><code>SetOutPath $INSTDIR
+SetOverwrite on
+Nsis7z::Extract "$TEMP\7z920_extra.7z"
+Delete "$TEMP\7z920_extra.7z"
+</code></pre>
+
+<p>把解压的路径定位于你之前设定的安装路径<code>$INSTDIR</code>中，调用<code>Nsis7z::Extract</code>命令进行解压操作，最后删除TEMP中的临时文件。
+过程非常简单。</p>
+
+<p><strong>结束语</strong>
+在线安装是一个趋势，程序的下载也需要专门的工具去控制，寄希望于其他软件的高性能表现还不如自己动手把该做的事情都做了。
+如果哪位朋友要做一些很酷的动画用于在线安装程序中，那得好好研究一下NSIS的插件制作，用C++做一个插件出来奉献给大家最好了。</p>
+
+<p>最近发现猎豹浏览器的安装程序不错值得模仿一下哦。</p>
+
+<p>上图：</p>
+
+<p><img src="/static/nsis_51.png" alt="安装开始" /></p>
+
+<p><img src="/static/nsis_52.png" alt="安装过程" /></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">烂菜</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-05-26T12:24:00+08:00" pubdate data-updated="true">May 26<span>th</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/nsis/'>NSIS</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://nicecai.github.io/blog/2013/05/26/nsis-slash-learn-nsis-step-by-step-setuponline/" data-via="aaronckj" data-counturl="http://nicecai.github.io/blog/2013/05/26/nsis-slash-learn-nsis-step-by-step-setuponline/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/05/26/learn-nsis-step-by-step-customprogress/" title="Previous Post: NSIS进阶教程(四)">&laquo; NSIS进阶教程(四)</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2014/11/03/use-python-to-publish-e-book/" title="Next Post: use python to publish E-book">use python to publish E-book &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>About Me</h1>
+<img src="/images/me.png"  alt="me"/>
+  <p>永远Beta</p>
+</section>
+<section>
+<h2>Reading&&Watching</h2>
+<div>
+<script type="text/javascript" src="http://www.douban.com/service/badge/pylife/?show=collection&amp;n=12&amp;columns=3&amp;hidelogo=yes" ></script>
+</div>
+</section><iframe width="100%" height="550" class="share_self"  frameborder="0" scrolling="no" src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=550&fansRow=2&ptype=1&speed=300&skin=2&isTitle=0&noborder=1&isWeibo=1&isFans=0&uid=1829155814&verifier=f1d7678d&dpc=1"></iframe>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/11/03/use-python-to-publish-e-book/">Use Python to Publish E-book</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/05/26/nsis-slash-learn-nsis-step-by-step-setuponline/">NSIS进阶教程(五)</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/05/26/learn-nsis-step-by-step-customprogress/">NSIS进阶教程(四)</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/05/26/learn-nsis-step-by-step-custommsgbox/">NSIS进阶教程(三)</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/05/25/learn-nsis-step-by-step-custombutton/">NSIS进阶教程(二)</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/nicecai">@nicecai</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'nicecai',
+            count: 1,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+<section class="googleplus">
+  <h1>
+    <a href="https://plus.google.com/aaronckj?rel=author">
+      <img src="http://www.google.com/images/icons/ui/gprofile_button-32.png" width="32" height="32">
+      Google+
+    </a>
+  </h1>
+</section>
+
+
+﻿<section>
+<h1>友情链接</h1>
+<a href="http://xwf.me">@桃花嘟嘟熊</a>
+<a href="http://blog.csdn.net/shuijing_0">@水晶石</a>
+</section>
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - 烂菜 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'hamletsoft';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://nicecai.github.io/blog/2013/05/26/nsis-slash-learn-nsis-step-by-step-setuponline/';
+        var disqus_url = 'http://nicecai.github.io/blog/2013/05/26/nsis-slash-learn-nsis-step-by-step-setuponline/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

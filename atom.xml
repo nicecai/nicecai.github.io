@@ -1,0 +1,1010 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[一个人的时间简史]]></title>
+  <link href="http://nicecai.github.io/atom.xml" rel="self"/>
+  <link href="http://nicecai.github.io/"/>
+  <updated>2014-12-14T21:11:27+08:00</updated>
+  <id>http://nicecai.github.io/</id>
+  <author>
+    <name><![CDATA[烂菜]]></name>
+    <email><![CDATA[aaron.ckj@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[use python to publish E-book]]></title>
+    <link href="http://nicecai.github.io/blog/2014/11/03/use-python-to-publish-e-book/"/>
+    <updated>2014-11-03T17:41:00+08:00</updated>
+    <id>http://nicecai.github.io/blog/2014/11/03/use-python-to-publish-e-book</id>
+    <content type="html"><![CDATA[
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[NSIS进阶教程(五)]]></title>
+    <link href="http://nicecai.github.io/blog/2013/05/26/nsis-slash-learn-nsis-step-by-step-setuponline/"/>
+    <updated>2013-05-26T12:24:00+08:00</updated>
+    <id>http://nicecai.github.io/blog/2013/05/26/nsis-slash-learn-nsis-step-by-step-setuponline</id>
+    <content type="html"><![CDATA[<h3>在线下载，下载后的安装，本地解压安装</h3>
+
+<h2>前言</h2>
+
+<blockquote><p>想做在线安装包教程已经很久了，一直找不到合适的时间，如今在一个慵懒的周末早晨终于开始了。今天晚上还要去虹口体育场看申花跟国安的比赛，还是要抓紧时间呀。
+在线安装是以前教程的一个延续。</p>
+
+<p><strong><code>意义一：</code></strong>国内很多的IT厂商在做安装包的时候首先考虑的是用户下载的时间可接受度，而一个动辄100mb的包会把用户吓跑，而且下载的入口还控制在诸如迅雷，旋风，IE，等等，稍等，还有360安全浏览器。。。你如果没有给360打个招呼，它说不定会报你的程序有毒。。。太可拍了。入口最重要，掌握在任何人手里都会成为收门票的工具。</p>
+
+<p><strong><code>意义二：</code></strong>用户对着迅雷，旋风的界面，千遍一律，没有任何信息的展示，就是一个进度条，你丧失了在第一时间占领用户意识的契机。如果你在安装的时候有动画播放，并且让用户在安装的过程中获取产品的使用技巧，或者像广告植入一样的严肃的对待这个不起眼的时间，你会收获很多。</p></blockquote>
+
+<h2>本篇主要讲讲以下几点：</h2>
+
+<ul>
+<li><p><strong>在线下载</strong></p></li>
+<li><p><strong>下载后的安装</strong></p></li>
+<li><p><strong>下载后的解压</strong></p></li>
+</ul>
+
+
+<p><strong>所用到的插件【新增】：</strong></p>
+
+<ol>
+<li>inetc</li>
+<li>nsis7z</li>
+</ol>
+
+
+<!--more-->
+
+
+<p><strong>讲义</strong></p>
+
+<p><strong>首先贴出今天教程的完整的例子【已测试】【附带图片】 <a href="https://github.com/nicecai/nsissource/tree/master/5" title="例子下载">猛击这里</a></strong></p>
+
+<blockquote><p>题外话:最终还是决定把所有源码转移到Github上面，虽然前段时间也被GFW给封了一下，但是还是不能影响我对Git以及开源项目的热情。我相信开放的才是最光明的。</p></blockquote>
+
+<p><em>这次教程主要处理在线安装的问题，所谓的在线安装，必须要有下载和安装两部分组成，安装又分为执行或者解压两个部分，这次一次性的把安装跟解压都跟大家探讨一下</em></p>
+
+<h2>在线下载</h2>
+
+<p>我摸索了一下<code>NSIS</code>的插件，最终确定用<code>Intec</code>，其他的也都看过，不是功能不适合就是我没有找到源码，选择<code>Intec</code>其实也是勉强而为之，因为它的3个下载的样式都不适合自定义界面的要求，因为它的进度条，它的百分比都是自己已经全部包装好了的。对着丑的惨不忍睹的界面，只有叹气的份了。</p>
+
+<p>怎么办？</p>
+
+<p>只能改源码，打开<code>Intec</code>插件的<strong><a href="http://nsis.sourceforge.net/mediawiki/images/c/c9/Inetc.zip" title="Intec源码"><code>C++</code>源码</a></strong>，修改两点：</p>
+
+<ol>
+<li>把它<code>Dialog</code>中的<code>ProgressBar</code>给隐藏掉，或者你直接把该<code>Dialog</code>给<code>Hide</code>掉也可以。</li>
+<li>修改其中的传值，如果你的自定义页面<code>CustomPage</code>中需要有多处地方需要统一的显示百分比进度的话需要在调用<code>Intec</code>的时候多传一些控件进去。你就可以在代码中修改</li>
+</ol>
+
+
+<p>因为我需要的只是一个进度的返回，以及<code>ProgressBar</code>的反应，所以所有的<code>Intec</code>的界面都被我<code>Hide</code>掉了，这里就不再贴源码了，因为我也找不到了，只找到当初<code>Release</code>出来的一个<code>Dll</code>，在给的源码包中。所有的传值方式都跟官方原版中的Intec是一样的，只是在参数中多加了几个外部组件的传入入口。</p>
+
+<p>By the way想改源码的童鞋，这个Intec的源码必须在VC6下编译，VC2005及以上编译出来的在有些平台下会有异常。
+嫌麻烦的话直接用给的也可以，照着例子中的调用即可。</p>
+
+<p>上代码：</p>
+
+<pre><code>inetc::get /hwnd $PPercent /hwnd2 $PPercent /probar $PB_ProgressBar /caption " " /popup "" "http://download.microsoft.com/download/c/6/e/c6e88215-0178-4c6c-b5f3-158ff77b1f38/NetFx20SP2_x64.exe" "$TEMP\NetFx20SP2_x64.exe"  /end
+Pop $0
+${If} $0 == "Transfer Error"
+  ;MessageBox MB_OK "net64err"
+    Call onClickClose
+    Abort
+${ELSEIF} $0 == "SendRequest Error"
+    ;MessageBox MB_OK "net64err2"
+    Call onClickClose
+    Abort
+${ELSE}
+    ;System::Call "user32::InvalidateRect(i $hwndparent,i0,i 1)"
+    Call NFInstall64
+${EndIf}
+</code></pre>
+
+<p>其中<code>/hwnd</code> <code>/hwnd2</code> <code>/probar</code>都是自定义界面上面的组件传入参数，后面紧跟的都是自己创建的<code>Label</code>跟<code>Progress</code>:<code>$PPercent</code> <code>$PB_ProgressBar</code></p>
+
+<p>下载完成后有返回值一般等于<code>OK</code>即可，但是经测试不能用唯一正确的<code>OK</code>来判别，因为有可能下载正确但是返回值不是<code>OK</code>，我就用了两个最严重的错误来判别，其他的就算是下载正确了。
+下载到<code>$TEMP</code>文件夹中，该文件夹在系统盘临时目录中，你测试的时候也可以直接设定一个目录，查看下载情况。
+下载就说到这里。</p>
+
+<h2>下载后的安装</h2>
+
+<p>这里的安装当然是指譬如微软的msi，微软的exe，或者是某些可执行程序。如果你需要执行这些后缀的程序的话，最好先了解一下该执行程序所依靠的环境。例子中是用<code>.net framework 2.0 sp2</code>做的例子，该执行程序需要依靠<code>Microsoft Installer 3.1</code>的安装环境，所以例子中在这一点也做了检测，譬如安装该执行程序所需的硬盘空间，在例子中也有体现，详情可以看代码。</p>
+
+<p><code>.net framework 2.0 sp2</code>的安装一般人都不希望弹出对话框出来，所以需要静默安装。</p>
+
+<pre><code>nsExec::ExecToStack '"$TEMP\NetFx20SP2_x64.exe" /q /c:"install.exe /noaspupgrade /q"'
+Pop $0
+${If} $0 == "timeout"
+    Call onClickClose
+    Abort
+${EndIf}
+;MessageBox MB_OK "net64inst2"
+${If} $0 == "error"
+    ;MessageBox MB_OK "net64inst1111111"
+    Call onClickClose
+    Abort
+${EndIf}
+
+Delete "$TEMP\NetFx20SP2_x64.exe"
+</code></pre>
+
+<p>参数<code>/q /c:"install.exe /noaspupgrade /q"</code>是该执行程序的静默安装方式。
+Pop出来的$0是安装结果，只有没有安装过的机器才能安装，安装过的机器都会报错，所以在安装.net framework之前需要读注册表判断一下是否安装过，例子中有。</p>
+
+<pre><code>Function NFEnvironmentCheck
+    ReadRegStr $1 HKLM "Hardware\Description\System\CentralProcessor\0" Identifier
+    StrCpy $2 $1 3
+    ${If} $2 == 'x86'
+        ReadRegStr $7 HKLM 'SOFTWARE\Microsoft\Windows NT\CurrentVersion' CurrentVersion
+        ReadRegStr $8 HKLM 'SOFTWARE\Microsoft\NET Framework Setup\NDP\v2.0.50727' Install
+        ReadRegStr $9 HKLM 'SOFTWARE\Microsoft\NET Framework Setup\NDP\v2.0.50727' SP
+    ${Else}
+        SetRegView 64
+        ReadRegStr $7 HKLM 'SOFTWARE\Microsoft\Windows NT\CurrentVersion' CurrentVersion
+        ReadRegStr $8 HKLM 'SOFTWARE\Microsoft\NET Framework Setup\NDP\v2.0.50727' Install
+        ReadRegStr $9 HKLM 'SOFTWARE\Microsoft\NET Framework Setup\NDP\v2.0.50727' SP
+        SetRegView lastused
+    ${EndIf}
+
+    ${If} $7 == '6.2'   ;Win8
+    ${OrIf} $7 == '6.1' ;Win7
+        ;判断是否装了.net framework 2.0 sp2
+        ${If} $8 == 1
+        ${AndIf} $9 == 2
+
+        ${Else}
+            ;GetFunctionAddress $0 DisplayNFLabel
+            ;BgWorker::CallAndWait
+            ${If} $2 == 'x86'
+                StrCpy $ISNETF 1
+            ${Else}
+              StrCpy $ISNETF 1
+            ${EndIf}
+        ${EndIf}
+
+    ${ElseIf} $7 == '6.0' ;WinVista
+    ${OrIf} $7 == '5.2'  ;Win2003
+    ${OrIf} $7 == '5.1'  ;WinXP
+    ${OrIf} $7 == '5.0'  ;Win2000
+        ;判断是否装了.net framework 2.0 sp2
+        ${If} $8 == 1
+        ${AndIf} $9 == 2
+
+        ${Else}
+            ${If} $2 == 'x86'
+                StrCpy $ISNETF 1
+            ${Else}
+              StrCpy $ISNETF 1
+      ${EndIf}
+        ${EndIf}
+    ${EndIf}
+FunctionEnd
+</code></pre>
+
+<p>最后删除<code>TEMP</code>文件夹中的临时文件
+整个安装过程就是这样的了。</p>
+
+<h2>下载后的解压</h2>
+
+<p>这一部分所需要解决的问题就是当用户需要下载自己的程序进行安装的时候，又不能自己再做一个msi的安装包吧，这样可以但是很麻烦，于是乎就直接用压缩的方式吧，这样方便。放眼压缩界7z绝对算是一个奇葩，有人做过统计，7z的压缩比是综合最好的，虽然压缩的时候比其他的压缩算法慢，但是解压却是差不多。幸好NSIS也有7z的<a href="http://nsis.sourceforge.net/Nsis7z_plug-in" title="7z插件">插件</a>
+在所有工作准备好之前，你需要把你的程序通过客户端自己的7z开源软件压缩好，并且放在一个服务器上面以供下载之用。
+例子中，我直接用的是7z官方的地址，作为我需要安装的软件。
+下载跟之前的是一样的，这里只说解压：</p>
+
+<pre><code>SetOutPath $INSTDIR
+SetOverwrite on
+Nsis7z::Extract "$TEMP\7z920_extra.7z"
+Delete "$TEMP\7z920_extra.7z"
+</code></pre>
+
+<p>把解压的路径定位于你之前设定的安装路径<code>$INSTDIR</code>中，调用<code>Nsis7z::Extract</code>命令进行解压操作，最后删除TEMP中的临时文件。
+过程非常简单。</p>
+
+<p><strong>结束语</strong>
+在线安装是一个趋势，程序的下载也需要专门的工具去控制，寄希望于其他软件的高性能表现还不如自己动手把该做的事情都做了。
+如果哪位朋友要做一些很酷的动画用于在线安装程序中，那得好好研究一下NSIS的插件制作，用C++做一个插件出来奉献给大家最好了。</p>
+
+<p>最近发现猎豹浏览器的安装程序不错值得模仿一下哦。</p>
+
+<p>上图：</p>
+
+<p><img src="http://nicecai.github.io/static/nsis_51.png" alt="安装开始" /></p>
+
+<p><img src="http://nicecai.github.io/static/nsis_52.png" alt="安装过程" /></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[NSIS进阶教程(四)]]></title>
+    <link href="http://nicecai.github.io/blog/2013/05/26/learn-nsis-step-by-step-customprogress/"/>
+    <updated>2013-05-26T11:33:00+08:00</updated>
+    <id>http://nicecai.github.io/blog/2013/05/26/learn-nsis-step-by-step-customprogress</id>
+    <content type="html"><![CDATA[<h3>自定义目录选择，自定义进度条，自定义图片切换效果</h3>
+
+<h2>前言</h2>
+
+<blockquote><p>上一节中我们已经处理了有关CheckBox自定义贴图的部分，但是目录选择的部分还没有加上，这节，我们先处理一下目录的选择部分，选择完路径之后就剩下安装了，于是进度条的创建的显得很有必要，但是系统的进度条创建简单，如何改变进度条的背景色跟进度色呢，这节我们也处理掉。有关图片切换的效果的插件也有很多，但是大部分都是基于默认安装窗体进行的，如何在一个完全自定义的页面上面创建一个图片切换效果呢，这节也可以得到答案。</p></blockquote>
+
+<h2>本篇主要讲讲以下几点：</h2>
+
+<ul>
+<li><p><strong>创建目录选择按钮与文本框</strong></p></li>
+<li><p><strong>创建自定义的进度条</strong></p></li>
+<li><p><strong>创建图片切换效果</strong></p></li>
+</ul>
+
+
+<p><strong>所用到的插件【新增】：</strong></p>
+
+<ol>
+<li><p>WebCtrl</p></li>
+<li><p>SkinProgress</p></li>
+<li><p>BgWorker</p></li>
+</ol>
+
+
+<!--more-->
+
+
+<p><strong>讲义</strong></p>
+
+<p><strong>首先贴出今天教程的完整的例子【已测试】【附带图片】 <a href="https://github.com/nicecai/nsissource/tree/master/4" title="例子下载">猛击这里</a></strong></p>
+
+<p><em>这次的教程基本是安装界面的最后的阶段的处理了，主要是创建一个目录选择控件，用于确定安装程序安装的路径，在安装过程中等待时间也是比较长的，遇到打广告的好时机不要错过，切换多图是个不错的选择；在安装过程中，释放文件是一个主要动作。如果不是自定义页面，该动作是在系统的安装页面的Section里面完成的，如果不做多线程处理，该动作会阻塞主线程也就是主界面的消息传递，主界面没有了消息传递也就不会响应拖动、点击关闭等等操作，这个是本节主要说明的地方。最后说一下图片切换的实现，以我目前尝试的，效果最好的还算是直接放一张网页最实在，通过网页的js实现切换效果。</em></p>
+
+<h2>目录选择框</h2>
+
+<p>目录选择框包括一个文本框跟一个Button按钮，做过Web的人都知道，html中有一个file的控件与之相吻合，在form中则是两个不同的component，文本框很好创建，按钮的单击事件是一个重点，我们看看代码：</p>
+
+<pre><code>;更改目录控件创建
+    ${NSD_CreateDirRequest} 26 79 358 25 "$INSTDIR"
+    Pop $Txt_Browser
+    ${NSD_OnChange} $Txt_Browser OnChange_DirRequest
+
+    ${NSD_CreateBrowseButton} 400 79 88 25 ""
+    Pop $Btn_Browser
+    StrCpy $1 $Btn_Browser
+    Call SkinBtn_Browser
+    GetFunctionAddress $3 OnClick_BrowseButton
+      SkinBtn::onClick $1 $3
+</code></pre>
+
+<p>这里创建了一个<code>$Txt_Browser</code>的文本框，一个<code>$Btn_Browser</code>的按钮，其中按钮的单击事件是 <code>OnClick_BrowserButton</code>，看看按钮的事件代码:</p>
+
+<pre><code>Function OnClick_BrowseButton
+  Pop $0
+
+  Push $INSTDIR 
+  Call GetParent
+  Pop $R0
+
+  Push $INSTDIR
+  Push "\"
+  Call GetLastPart
+  Pop $R1
+
+  nsDialogs::SelectFolderDialog "请选择 $R0 安装的文件夹:" "$R0"
+  Pop $0
+  ${If} $0 == "error" 
+    Return
+  ${EndIf}
+  ${If} $0 != ""
+    StrCpy $INSTDIR "$0\$R1"
+    system::Call `user32::SetWindowText(i $Txt_Browser, t "$INSTDIR")`
+  ${EndIf}
+FunctionEnd
+
+;得到选中目录用于拼接安装程序名称
+Function GetParent
+  Exch $R0
+  Push $R1
+  Push $R2
+  Push $R3
+  StrCpy $R1 0
+  StrLen $R2 $R0
+  loop:
+    IntOp $R1 $R1 + 1
+    IntCmp $R1 $R2 get 0 get
+    StrCpy $R3 $R0 1 -$R1
+    StrCmp $R3 "\" get
+    Goto loop
+  get:
+    StrCpy $R0 $R0 -$R1
+    Pop $R3
+    Pop $R2
+    Pop $R1
+    Exch $R0
+FunctionEnd
+
+
+;截取选中目录
+Function GetLastPart
+  Exch $0 ; chop char
+  Exch
+  Exch $1 
+  Push $2
+  Push $3
+  StrCpy $2 0
+  loop:
+    IntOp $2 $2 - 1
+    StrCpy $3 $1 1 $2
+    StrCmp $3 "" 0 +3
+      StrCpy $0 ""
+      Goto exit2
+    StrCmp $3 $0 exit1
+    Goto loop
+  exit1:
+    IntOp $2 $2 + 1
+    StrCpy $0 $1 "" $2
+  exit2:
+    Pop $3
+    Pop $2
+    Pop $1
+    Exch $0 
+FunctionEnd
+</code></pre>
+
+<p>单击按钮的时候用<code>nsDialogs</code>创建一个<code>SelectFolderDialog</code>的对话框，选择需要安装的路径。<code>GetParent</code>方法主要是要取得当前选中的路径，<code>GetLastPart</code>主要是保留当前的安装程序最底层的目录名称，最终两个部分合起来作为整体的安装路径赋值给<code>$INSTDIR</code>。具体的效果可以运行源码查看。</p>
+
+<h2>创建自定义进度条</h2>
+
+<p><code>nsDialogs</code>有自带的进度条，该进度条的颜色是那种系统的颜色，如果遇到自己设计的，就会出现问题，于是用<code>SkinProgress</code>就可以给进度条赋上两张图片，一张是底图，一张是进度图，虽然不是非常的完美，比如圆角，比如透明，比如阴影，比如……但是已经是跟NSIS快捷脚本配合的很好的了。</p>
+
+<pre><code>${NSD_CreateProgressBar} 24 265 474 7 ""
+    Pop $PB_ProgressBar
+    SkinProgress::Set $PB_ProgressBar "$PLUGINSDIR\loading2.bmp" "$PLUGINSDIR\loading1.bmp"
+</code></pre>
+
+<p>用法非常简单，用<code>nsDialogs</code>创建一个<code>ProgressBar</code>，然后用<code>SkinProgress</code>去<code>set</code>一下，后面跟上两张图片。<code>ProgressBar</code>的图片是有讲究的，具体的可以看源码的image文件夹中两张图片的切图，基本要使用什么效果，自己做两张图就可以了。</p>
+
+<h2>创建图片切换</h2>
+
+<p>图片的切换有很多种，<code>gif</code>、<code>flash</code>、<code>js</code>、甚至自己用c++做插件实现，这里提供一种很方面，但是又不失功能强大的方式。网页的形式！你很容易能自己写一段js实现多张图片的切换，这里唯一要解决的就是如何在<code>Form</code>上创建一个浏览器用于加载自己的本地<code>html</code>页面。</p>
+
+<pre><code>System::Call `*(i,i,i,i)i(1,34,518,200).R0`
+    System::Call `user32::MapDialogRect(i$HWNDPARENT,iR0)`
+    System::Call `*$R0(i.s,i.s,i.s,i.s)`
+    System::Free $R0
+    FindWindow $R0 "#32770" "" $HWNDPARENT
+    System::Call `user32::CreateWindowEx(i,t"STATIC",in,i${DEFAULT_STYLES}|${SS_BLACKRECT},i1,i34,i518,i200,iR0,i1100,in,in)i.R0`
+    StrCpy $WebImg $R0
+    WebCtrl::ShowWebInCtrl $WebImg "$PLUGINSDIR/index.htm"
+</code></pre>
+
+<p>首先在界面上创建一个<code>STATIC</code>的对象(对话框)，通过<code>MapDialogRect</code>来定位该对话框的位置(<code>1,34</code>)，大小(<code>518,200</code>)，然后通过<code>WebCtrl</code>控件来把自己的网页<code>index.htm</code>加载进去，<code>WebCtrl</code>插件实现的就是调用本地浏览器。这里定位浏览器的位置以及大小是难点，还需多多熟悉才是。</p>
+
+<p>网页里面的代码我就不讲解了，主要是图片js切换，你也可以更换js代码，网络中很多效果都有。</p>
+
+<p>如果发现界面上的图片切换画面跟外边框有距离，就去查看网页里面的<code>css</code>，是否把<code>margin</code>跟<code>padding</code>都设成了0，这样就没有间隙了，看上去跟贴在form上面的一样。：）</p>
+
+<h2>多线程安装</h2>
+
+<p>界面都画好了，现在说到安装文件的时候释放了。源码中我是通过<code>sleep</code>来模拟的，具体的释放跟这个差不多。首先创建的是一个只运行一次的定时器<code>Timer</code>：</p>
+
+<pre><code>GetFunctionAddress $0 NSD_TimerFun
+    nsDialogs::CreateTimer $0 1
+</code></pre>
+
+<p>其中<code>nsDialogs::CreateTimer</code>后面的参数1代表的是1毫秒，正常情况下就是1毫秒执行一次<code>NSD_TimerFun</code>介个方法。</p>
+
+<pre><code>Function NSD_TimerFun
+    GetFunctionAddress $0 NSD_TimerFun
+    nsDialogs::KillTimer $0
+    !if 1   ;是否在后台运行,1有效
+        GetFunctionAddress $0 InstallationMainFun
+        BgWorker::CallAndWait
+    !else
+        Call InstallationMainFun
+    !endif
+FunctionEnd
+</code></pre>
+
+<p>本身定时器就是一个异步的功能，如果定时器是同步的，那就没有意义了对不，那么既然是异步的，为什么在<code>NSD_TimerFun</code>里面做<code>Sleep</code>操作的时候，主界面会卡死不响应呢。这个就要看看<code>nsDialogs</code>插件如何实现这个定时器的了，我也没有详查，应该不是创建子线程<code>Thread</code>的方式。</p>
+
+<p>这里如果抛弃<code>Timer</code>，直接使用<code>BgWorker</code>的话，也可以，但是会有一个缺陷：当你需要同时运行两个方法的时候，只有通过创建两个<code>Timer</code>来实现，并且在<code>Timer</code>调用的方法里面采用<code>BgWorker</code>来实现子线程操作。</p>
+
+<p>看看上面代码在<code>Timer</code>执行方法里面，第一步是停止<code>Timer</code>：因为我们只用了他的异步的特点，并没有想做定时器。然后使用<code>BgWorker</code>插件。</p>
+
+<p>使用<code>BgWorker</code>插件非常简单，只需用<code>$0</code>接收方法地址，然后调用<code>BgWorker::CallAndWait</code>。顾明思意，<code>BgWorker</code>调用过程是同步的，而且会<code>Wait</code>到<code>InstallationMainFun</code>方法执行结束，如果<code>BgWorker::CallAndWait</code>调用下面还有代码的话，只有在执行完<code>InstallationMainFun</code>方法后才能执行。</p>
+
+<p>下面看看<code>InstallationMainFun</code>的实现：</p>
+
+<pre><code>Function InstallationMainFun
+    SendMessage $PB_ProgressBar ${PBM_SETRANGE32} 0 100
+    SendMessage $PB_ProgressBar ${PBM_SETPOS} 10 0
+    Sleep 1000
+    SendMessage $PB_ProgressBar ${PBM_SETPOS} 20 0
+    Sleep 1000
+    SendMessage $PB_ProgressBar ${PBM_SETPOS} 30 0
+    Sleep 1000
+    SendMessage $PB_ProgressBar ${PBM_SETPOS} 40 0
+    Sleep 1000
+    SendMessage $PB_ProgressBar ${PBM_SETPOS} 50 0
+    Sleep 1000
+    SendMessage $PB_ProgressBar ${PBM_SETPOS} 60 0
+    Sleep 1000
+    SendMessage $PB_ProgressBar ${PBM_SETPOS} 70 0
+    Sleep 1000
+    SendMessage $PB_ProgressBar ${PBM_SETPOS} 80 0
+    Sleep 1000
+    SendMessage $PB_ProgressBar ${PBM_SETPOS} 90 0
+    Sleep 1000
+    SendMessage $PB_ProgressBar ${PBM_SETPOS} 100 0
+
+    ShowWindow $Btn_Next ${SW_SHOW}
+    ShowWindow $Btn_Install ${SW_HIDE}
+    EnableWindow $Btn_Cancel 0
+FunctionEnd
+</code></pre>
+
+<p>所做的工作主要是操作滚动条的位置。在实际的释放过程中，这个设置也是这样的，目前还没有自定义页面的释放插件，能回调得到精确的释放量，以及释放文件等等信息。所以只能模拟，尽可能的细化下来，估计着大概多少。这个是一个需要情商的工作，如果你有洁癖，偏执之类的病，我想你还是用系统自带的释放好了，也不需要自定义页面了 。</p>
+
+<p>最后上几张图吧，好看点，也算是阶段的结束 。</p>
+
+<p><strong>（安装过程）</strong></p>
+
+<p><img src="http://m1.img.libdd.com/farm4/2012/1123/00/EB4E0179E1715F0AB4E0B354AC1FCD44E54B5981D32F7_520_348.JPEG" title="安装过程" alt="&quot;安装过程&quot;" /></p>
+
+<p><strong>（安装过程结束）</strong></p>
+
+<p><img src="http://m1.img.libdd.com/farm4/2012/1123/00/DD53AE55D1C134F2DBA34352B3CBDE2A99D5FA1612537_518_348.JPEG" title="安装过程结束" alt="&quot;安装过程结束&quot;" /></p>
+
+<p><strong>（安装结束）</strong></p>
+
+<p><img src="http://m2.img.libdd.com/farm5/2012/1123/00/1B06AB3E30D4DB314BDBC49639B2D36D50F87B4D70553_518_346.JPEG" title="安装结束" alt="&quot;安装结束&quot;" /></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[NSIS进阶教程(三)]]></title>
+    <link href="http://nicecai.github.io/blog/2013/05/26/learn-nsis-step-by-step-custommsgbox/"/>
+    <updated>2013-05-26T11:09:00+08:00</updated>
+    <id>http://nicecai.github.io/blog/2013/05/26/learn-nsis-step-by-step-custommsgbox</id>
+    <content type="html"><![CDATA[<h3>自定义MessageBox，自定义页跳转，自定义CheckBox样式</h3>
+
+<h2>前言</h2>
+
+<blockquote><p>上一节中我们处理了Button的自定义以及Button的事件消息、协议框的创建等等，这节中我们要更加完美的要求我们的提示框也要漂亮，CheckBox也要自定义样式。有人说MessageBox在NSIS默认情况下是带边框的API窗口，是一个比较丑雏形，但是NSIS的nsDialogs插件也没有提供一个可以创建弹出窗的命令行呀，CheckBox系统自带的只能是那个默认的皮肤，如果想把CheckBox的背景改成蓝色，或者把CheckBox的勾改成爱心，把叉改成骷髅头如何去做呢？这些问题在任何一个面向对象的编程语言中都可以很容易实现，在NSIS这样局限的环境中也可以变通实现，接下来我们处理一下这些问题。</p></blockquote>
+
+<h2>本篇主要讲讲以下几点：</h2>
+
+<ul>
+<li><p><strong>如何抛弃系统的MessageBox</strong></p></li>
+<li><p><strong>如何实现自定义页面的跳转</strong></p></li>
+<li><p><strong>如何用自己的贴图实现CheckBox功能</strong></p></li>
+</ul>
+
+
+<p><strong>所用到的插件【新增】：</strong></p>
+
+<ol>
+<li><p>FindProcDLL（查找当前进程插件）</p></li>
+<li><p>KillProcDLL （关闭指定进程插件）</p></li>
+</ol>
+
+
+<!--more-->
+
+
+<p><strong>讲义</strong></p>
+
+<p><strong>首先贴出一个今天教程的完整的例子【已测试】【附带图片】 <a href="https://github.com/nicecai/nsissource/tree/master/3" title="例子下载">猛击这里</a></strong></p>
+
+<p><em>题外话，本节的重点是如何把系统的MessageBox替换掉自定义的窗口，一开始这个命题挺难的，原本因为nsDialogs可以创建一个弹窗，然后给它披上一层皮就可以了，在查了很多资料后，我了解到根本不行，nsDialogs插件不能完成这么简单的工作，而是通过另一个插件nsWindows来完成。另一个自定义CheckBox功能还是有点讨巧的，其实在窗体编程中，Button跟CheckBox本质上是一样的东西，CheckBox就是Button披上一层皮加上一些单击事件改变皮肤而存在的，于是就有了CheckBox的自定义的可能性。</em></p>
+
+<p><em>还是要讲一点不足，此处CheckBox不包含旁边的说明文字，也就是说，当你促发CheckBox旁边的文字某些事件的时候CheckBox本事不会有任何反应，这样就不能构成一个CheckBox的整体，不过对于要求不是非常高的人来说，这点完全可以忽略。</em></p>
+
+<h2>如何抛弃系统的MessageBox</h2>
+
+<p>通常在使用警告框的时候，我们会调用MessageBox的NSIS命令，然而此窗口无比丑陋，简直是对我们正在做的窗体的亵渎。于是我们自己创建警告框，此警告框也要跟我们已有的窗口风格一致，包含几大问题，“无边框”、“美观贴图”、“移动”、“逻辑判断功能”，做到以上几点就可以了。上代码：</p>
+
+<pre><code>Function onCancel
+    IsWindow $WarningForm Create_End
+    !define Style ${WS_VISIBLE}|${WS_OVERLAPPEDWINDOW}
+    ${NSW_CreateWindowEx} $WarningForm $hwndparent ${ExStyle} ${Style} "" 1018
+
+    ${NSW_SetWindowSize} $WarningForm 349 184
+    EnableWindow $hwndparent 0
+    System::Call `user32::SetWindowLong(i$WarningForm,i${GWL_STYLE},0x9480084C)i.R0`
+    ${NSW_CreateButton} 148 122 88 25 ''
+    Pop $R0
+    StrCpy $1 $R0
+    Call SkinBtn_Quit
+    ${NSW_OnClick} $R0 OnClickQuitOK
+
+    ${NSW_CreateButton} 248 122 88 25 ''
+    Pop $R0
+    StrCpy $1 $R0
+    Call SkinBtn_Cancel
+    ${NSW_OnClick} $R0 OnClickQuitCancel
+
+    ${NSW_CreateBitmap} 0 0 100% 100% ""
+    Pop $BGImage
+  ${NSW_SetImage} $BGImage $PLUGINSDIR\quit.bmp $ImageHandle
+    GetFunctionAddress $0 onWarningGUICallback
+    WndProc::onCallback $BGImage $0 ;处理无边框窗体移动
+  ${NSW_CenterWindow} $WarningForm $hwndparent
+    ${NSW_Show}
+    Create_End:
+  ShowWindow $WarningForm ${SW_SHOW}
+FunctionEnd
+</code></pre>
+
+<p>这个<code>onCancel</code>方法是在我们在主窗体上点击“取消”或者“关闭”的时候促发的方法，这时会弹出一个命令窗口出来。</p>
+
+<p>创建跟设置样式：<code>WS_VISIBLE</code>  是显示的意思，不加会隐藏掉，<code>WS_OVERLAPPEDWINDOW</code>  是创建一个层叠窗体的属性也需要加上。<code>NSW_CreateWindowEx</code> 是创建窗体的主命令。</p>
+
+<p>创建完窗体后，用<code>NSW_SetWindowSize</code>  更改一下窗体的大小。</p>
+
+<p><code>EnableWindow $hwndparent 0</code>这段代码一定要加上，这是创建一个警告框模式窗体的必要条件，就是让主窗体不能操作。</p>
+
+<p>接下来就是消除边框，用<code>nsWindows</code>命令创建按钮的一套，跟<code>nsDialogs</code>的创建是一致的，包括无边框移动的一套，在第一节中已经讲过，这里就不啰嗦了。</p>
+
+<p>最后把这个窗体展示出来就可以了。把这个<code>onCancel</code>这个方法赋给“取消”按钮的单击事件，这样一个无边框模式窗体警告框就好了。</p>
+
+<p><img src="http://m3.img.libdd.com/farm4/192/463CC65762D1D65071C86536FAE31FC0_511_350.JPEG" title="自定义弹出框" alt="&quot;自定义弹出框&quot;" /></p>
+
+<p>当我们点击“退出”的时候，就要关掉当前程序，所以要添加一个关闭的方法：</p>
+
+<pre><code>Function onClickClose
+    FindProcDLL::FindProc "test.exe"
+    Sleep 500
+    Pop $R0
+    ${If} $R0 != 0
+    KillProcDLL::KillProc "test.exe"
+    ${EndIf}
+FunctionEnd
+</code></pre>
+
+<p>通过<code>FindProcDLL</code>插件的<code>FindProc</code>方法找到安装进程，并且通过<code>KillProcDLL</code>插件的<code>KillProc</code>杀之。</p>
+
+<p>当我们点击“取消”的时候，这时候需要关闭当前警告框，并且让主窗体能够处于Active状态</p>
+
+<pre><code>Function OnClickQuitCancel
+  ${NSW_DestroyWindow} $WarningForm
+  EnableWindow $hwndparent 1
+  BringToFront
+FunctionEnd
+</code></pre>
+
+<p><code>NSW_DestroyWindow</code>命令销毁掉警告框，使主窗体能活动，并且<code>Bring</code>到前端。</p>
+
+<h2>如何实现自定义页面的跳转</h2>
+
+<p>一开始我们就定义了两个自定义页面：</p>
+
+<pre><code>Page custom WelcomePage
+Page custom InstallationPage
+</code></pre>
+
+<p>从<code>WelcomePage</code>跳转到<code>InstallationPage</code>，这个就是<code>下一步</code>按钮的事件。</p>
+
+<p>创建一个<code>RelGotoPage</code>方法：</p>
+
+<pre><code>Function RelGotoPage
+  IntCmp $R9 0 0 Move Move
+    StrCmp $R9 "X" 0 Move
+      StrCpy $R9 "120"
+  Move:
+  SendMessage $HWNDPARENT "0x408" "$R9" ""
+FunctionEnd
+</code></pre>
+
+<p>详细解释在这里 <a href="http://nsis.sourceforge.net/Go_to_a_NSIS_page" title="gotoansispage">http://nsis.sourceforge.net/Go_to_a_NSIS_page</a></p>
+
+<blockquote><p>If a number > 0: Goes foward that number of pages. Code of that page will be executed, not returning to this point. If it is bigger than the number of pages that are after that page, it simulates a &ldquo;Cancel&rdquo; click.</p>
+
+<p>If a number &lt; 0: Goes back that number of pages. Code of that page will be executed, not returning to this point. If it is bigger than the number of pages that are before that page, it simulates a &ldquo;Cancel&rdquo; click.</p>
+
+<p>If X: Simulates a &ldquo;Cancel&rdquo; click. Code will go to callback functions, not returning to this point.</p>
+
+<p>If 0: Continues on the same page. Code will still be running after the call.</p></blockquote>
+
+<p>在<code>下一步</code>的单击事件中加入以下代码，跳转就好了，而且以后的调转RelGotoPage都适用</p>
+
+<pre><code>Function onClickNext
+  StrCpy $R9 1
+  Call RelGotoPage
+  Abort
+FunctionEnd
+</code></pre>
+
+<h2>如何用自己的贴图实现CheckBox功能</h2>
+
+<p><code>CheckBox</code>也有系统自带的那种健全的，但是效果没有<code>Button</code>贴皮肤后好，所以弃用之，在第二个页面中创建几个<code>Button</code>跟标签：</p>
+
+<pre><code>${NSD_CreateButton} 26 150 15 15 ""
+    Pop $Ck_ShortCut
+    StrCpy $1 $Ck_ShortCut
+    Call SkinBtn_Checked
+    GetFunctionAddress $3 OnClick_CheckShortCut
+    SkinBtn::onClick $1 $3
+    StrCpy $Bool_ShortCut 1
+    ${NSD_CreateLabel} 45 151 100 15 "添加桌面快捷方式"
+    Pop $Lbl_ShortCut
+    SetCtlColors $Lbl_ShortCut ""  transparent ;背景设成透明
+</code></pre>
+
+<p>创建<code>CheckBox</code>的时候要考虑周全，首先要定义该<code>CheckBox</code>的变量，该<code>CheckBox</code>的皮肤，记录该<code>CheckBox</code>状态的变量<code>$Bool_ShortCut</code>，该<code>CheckBox</code>旁边的提示文字变量<code>$Lbl_ShortCut</code></p>
+
+<p><img src="http://m2.img.libdd.com/farm5/21/746DB83C38C5A17BDD21506D6D3DF615_15_75.jpg" title="自定义Checkbox" alt="&quot;自定义Checkbox&quot;" /></p>
+
+<p><img src="http://m1.img.libdd.com/farm5/248/604441F84638FEF06106931B3A6A6EF8_15_75.jpg" title="自定义Checkbox" alt="&quot;自定义Checkbox&quot;" /></p>
+
+<p>Button的贴图跟变换方式在第二节中已经介绍，这里就不啰嗦。</p>
+
+<p>这里的<code>OnClick_CheckShortCut</code>方法不仅仅是一个变换的实现，也通过<code>$Bool_ShortCut</code>记录了当前<code>CheckBox</code>的状态</p>
+
+<pre><code>Function OnClick_CheckShortCut
+  ${IF} $Bool_ShortCut == 1
+        IntOp $Bool_ShortCut $Bool_ShortCut - 1
+        StrCpy $1 $Ck_ShortCut
+        Call SkinBtn_UnChecked
+    ${ELSE}
+        IntOp $Bool_ShortCut $Bool_ShortCut + 1
+        StrCpy $1 $Ck_ShortCut
+        Call SkinBtn_Checked
+    ${EndIf}
+FunctionEnd
+</code></pre>
+
+<p>最后我们在完成安装的时候，可以通过<code>$Bool_ShortCut</code>该变量来了解用户的选择</p>
+
+<p><img src="http://m2.img.libdd.com/farm4/125/5E2EF978988C13590D44C1E66D174D7D_524_348.JPEG" title="整体图" alt="&quot;整体图&quot;" /></p>
+
+<p><strong>结束语</strong></p>
+
+<p>其实不难，逻辑清晰，知道自己朝哪个方向去寻找答案，一切就会云开雾散。希望大家能学到一些。</p>
+
+<p>***************************************************************************</p>
+
+<p>有任何疑问请留言。</p>
+
+<p>That&rsquo;s all</p>
+
+<p>下回继续探讨</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[NSIS进阶教程(二)]]></title>
+    <link href="http://nicecai.github.io/blog/2013/05/25/learn-nsis-step-by-step-custombutton/"/>
+    <updated>2013-05-25T13:23:00+08:00</updated>
+    <id>http://nicecai.github.io/blog/2013/05/25/learn-nsis-step-by-step-custombutton</id>
+    <content type="html"><![CDATA[<h3>自定义界面之Button、License窗口实现</h3>
+
+<h2>前言</h2>
+
+<blockquote><p>在上一节中我们粗略的处理一下无边框窗体、背景贴图、鼠标移动。这节主要是创建用于响应事件的Button以及能展示软件License的窗口，还能用Button控制软件协议的展示与否。
+代码还是延续上一节的。</p></blockquote>
+
+<h2>本篇主要讲讲以下几点：</h2>
+
+<ul>
+<li><p><strong>如何创建一个自己的按钮</strong></p></li>
+<li><p><strong>如何创建一个自己的License窗口</strong></p></li>
+<li><p><strong>如何用自己的按钮控制自己的License窗口事件</strong></p></li>
+</ul>
+
+
+<p><strong>所用到的插件：</strong></p>
+
+<ol>
+<li><p>nsDialogs</p></li>
+<li><p>SkinBtn</p></li>
+</ol>
+
+
+<!--more-->
+
+
+<p><strong>讲义</strong></p>
+
+<p><strong>首先贴出一个今天教程的完整的例子（附带图片） <a href="https://github.com/nicecai/nsissource/tree/master/2" title="例子下载">猛击这里</a></strong></p>
+
+<p><em>本文还是在安装程序的首张Welcome中执行，上一节例子中的背景图需要做适当的修改，因为原本需要创建Button的地方背后有图，适当用PS去抹去就好。本文的前期工具就是PS了一部分元素。加入了几张Button的背景图。</em></p>
+
+<h2>创建一个属于自己Design的Button</h2>
+
+<pre><code>;下一步
+${NSD_CreateButton} 319 303 88 25 ""
+    Pop $Btn_Next
+    StrCpy $1 $Btn_Next
+    Call SkinBtn_Next
+    GetFunctionAddress $3 onClickNext
+SkinBtn::onClick $1 $3
+</code></pre>
+
+<p>原本<code>nsDialogs</code>插件就可以用<code>${NSD_CreateButton}</code>命令创建一个<code>Button</code>按钮出来，可惜的是此<code>Button</code>按钮默认的有点丑。</p>
+
+<p>下面就要说到如何改观<code>Button</code>的样式，再接触之前我一直想找有没有用一张图片来替代<code>Button</code>的区域，并且给<code>Image</code>附上事件之类的想法。等到刘若英的后来，我发现有一个<code>SkinBtn</code>的插件可以完成此类工作。</p>
+
+<p><code>SkinBtn</code>是我在梦想吧中下载的一个第三方插件，国人开发，支持<code>Button</code>的五种状态：<code>Normal</code>，<code>Hover</code>，<code>Click</code>，<code>Disabled</code>，<code>Focus</code>，正常、鼠标悬浮、单击时、不可用时、获得焦点时。这五种状态已经完全够用了。</p>
+
+<p>所要注意的就是<code>SkinBtn</code>的五种状态图需要竖行排列，宽高没有限制，但是高度像素最好的5的倍数（我猜是为了整除，方便取图）下面贴一张示例<code>Button</code>的贴图：</p>
+
+<p><img src="http://m1.img.libdd.com/farm5/247/02C129DE5A48EEB00210DA62142D77F7_88_125.jpg" title="Button贴图" alt="Button贴图" /></p>
+
+<p>SkinBtn的用法是这样的：</p>
+
+<p>在<code>.onInit</code>的初始化图片资源，并且要用<code>SkinBtn</code>插件的方法初始化一下：</p>
+
+<pre><code>File `/ONAME=$PLUGINSDIR\btn_next.bmp` `images\btn_next.bmp`
+SkinBtn::Init "$PLUGINSDIR\btn_next.bmp"
+</code></pre>
+
+<p>紧接着<code>Call</code>以下方法，给当前的<code>Button</code>附上定义的图形：</p>
+
+<pre><code>Function SkinBtn_Next
+  SkinBtn::Set /IMGID=$PLUGINSDIR\btn_next.bmp $1
+FunctionEnd
+</code></pre>
+
+<p>现在窗体中的按钮已经被处理成自己想要的效果了，这时候衣服算是穿起来了，我们再试一试他的功能怎么样，我们定义一个<code>onClickNext</code>的<code>function</code>，然后调用<code>SkinBtn</code>插件的<code>onClick</code>方法进行调用：</p>
+
+<pre><code>GetFunctionAddress $3 onClickNext
+    SkinBtn::onClick $1 $3
+;下一步按钮事件
+Function onClickNext
+  MessageBox MB_OK "下一步"
+  Abort
+FunctionEnd
+</code></pre>
+
+<p>单击事件里面只做了弹出消息框这么一个临时的操作，后面的教程中会说明怎么弹到另一张page中，今天这里不谈。</p>
+
+<p>这样一个自己的贴图的Button，从外观到功能都已经完成了。</p>
+
+<h2>创建显示License内容的控件</h2>
+
+<p>关于License的框如何显示的问题，NSIS的默认窗体有一个专门的协议<code>Page</code>，不过在我们的自定义<code>Page</code>中就不说那个了，在我们的Welcome页面中加入一个协议显示的窗口，这时候需要准备一个协议按钮的贴图，协议窗口。</p>
+
+<p><img src="http://m3.img.libdd.com/farm5/177/FC7EB1FC677FFC6327EECA787CE628B1_95_75.jpg" title="协议贴图" alt="协议贴图" /></p>
+
+<p><img src="http://m2.img.libdd.com/farm4/18/9D7F4E4676411D39EEEEA26CFCA46312_95_75.jpg" title="协议贴图" alt="协议贴图" /></p>
+
+<p>协议的按钮样子看上去是超链接，我们可以通过Button贴图去实现，不要一味认死理去创建超链接的命令。因为有两种状态，所以有两份贴图。</p>
+
+<p>图片预载入跟贴图的步骤就不说了，这里初始化该Button的时候是默认的箭头向上的图，我们只要额外的创建一个变量来控制点击的状态，并且在按钮点击事件中重新给Button贴上第二张箭头向上的图就可以实现按钮的贴图跟功能的统一：</p>
+
+<pre><code>Function SkinBtn_Agreement1
+  SkinBtn::Set /IMGID=$PLUGINSDIR\btn_agreement1.bmp $1
+FunctionEnd
+
+Function SkinBtn_Agreement2
+  SkinBtn::Set /IMGID=$PLUGINSDIR\btn_agreement2.bmp $1
+FunctionEnd
+
+;协议按钮事件
+Function onClickAgreement
+    ${IF} $Bool_License == 1
+        IntOp $Bool_License $Bool_License - 1
+        StrCpy $1 $Btn_Agreement
+        Call SkinBtn_Agreement1
+    ${ELSE}
+        IntOp $Bool_License $Bool_License + 1
+        StrCpy $1 $Btn_Agreement
+        Call SkinBtn_Agreement2
+    ${EndIf}
+FunctionEnd
+</code></pre>
+
+<p>以上代码中，<code>onClickAgreement</code>方法是<code>Button</code>的点击响应事件，变量<code>Bool_License</code>是控制显示那张<code>Button</code>背景图的控制单元，它的初始值是<code>0</code>，<code>IF</code>判断中写的是当前状态下需要处理的事件。<code>IntOp</code>命令是执行加减运算。</p>
+
+<p>这样，一个根据点击来更改背景图片的按钮就做好了。</p>
+
+<h2>用自定义的按钮去控制<code>License</code>窗口的显示</h2>
+
+<p>在做<code>License</code>之前首先要准备一份<code>License</code>的文件，NSIS命令中有读取文件，显示文件内容的命令，该文件可以是Txt，也可以是带有格式的RTF，这里示例中选用RTF文件。在源码包的RTF协议用的KuGou的。而用于显示RTF的控件则是<code>nsDialogs</code>插件提供的<code>RichEdit20A</code>，还要注意引入头文件<code>LoadRTF.nsh</code></p>
+
+<pre><code>;读取RTF的文本框
+nsDialogs::CreateControl "RichEdit20A" \
+${ES_READONLY}|${WS_VISIBLE}|${WS_CHILD}|${WS_TABSTOP}|${WS_VSCROLL}|${ES_MULTILINE}|${ES_WANTRETURN} \
+${WS_EX_STATICEDGE} \
+5 44 500 203 ''
+Pop $Txt_License
+${LoadRTF} '$PLUGINSDIR\license.rtf' $Txt_License
+ShowWindow $Txt_License ${SW_HIDE}
+</code></pre>
+
+<p>以上代码就是创建读取RTF文件的多行文本框，并且设定了一些常用的属性，具体的样式属性可以通过查询<code>nsDialogs</code>插件的官方文件可以得到，我们让该控件默认是不显示的状态。</p>
+
+<p>这样一个，协议的显示控件就创建完毕了。</p>
+
+<p>创建好了协议控件<code>$Txt_License</code>，那么接着就是用刚才创建的<code>Button</code>控制该窗口的显示与否，修改刚才的代码：</p>
+
+<pre><code>;协议按钮事件
+Function onClickAgreement
+    ${IF} $Bool_License == 1
+        ShowWindow $MiddleImage ${SW_SHOW}
+        ShowWindow $Txt_License ${SW_HIDE}
+        IntOp $Bool_License $Bool_License - 1
+        StrCpy $1 $Btn_Agreement
+        Call SkinBtn_Agreement1
+    ${ELSE}
+        ShowWindow $MiddleImage ${SW_HIDE}
+        ShowWindow $Txt_License ${SW_SHOW}
+        IntOp $Bool_License $Bool_License + 1
+        StrCpy $1 $Btn_Agreement
+        Call SkinBtn_Agreement2
+    ${EndIf}
+FunctionEnd
+</code></pre>
+
+<p>在事件当中，加入隐藏中间背景图跟显示<code>License</code>窗口的代码，这样一个修改<code>Button</code>贴图跟控制协议窗口显示与否的关联就做好了。</p>
+
+<p><strong>结束语</strong></p>
+
+<p><img src="http://m3.img.libdd.com/farm5/228/0A8488AC09A0817F2629BC3AAE6C29E4_515_352.JPEG" title="整体图" alt="整体图" />
+<img src="http://m1.img.libdd.com/farm5/40/EF24BBA77B190D6A60852983C5A46828_515_352.JPEG" title="整体图" alt="整体图" /></p>
+
+<p>图片还需修整修整。</p>
+
+<p>在此文中，核心的部分是如何创建读取RTF的协议窗口还有Button控制协议窗口的显示的部分，这部分所用到的代码逻辑是每个初级Coder都可以写出来的，本文也就是抛砖引玉。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[NSIS进阶教程(一)]]></title>
+    <link href="http://nicecai.github.io/blog/2013/05/24/learn-nsis-step-by-step-noborder/"/>
+    <updated>2013-05-24T17:37:00+08:00</updated>
+    <id>http://nicecai.github.io/blog/2013/05/24/learn-nsis-step-by-step-noborder</id>
+    <content type="html"><![CDATA[<h3>自定义界面之无边框窗体移动贴图</h3>
+
+<h2>前言</h2>
+
+<blockquote><p>在Windows下，有很多人想做一个完全自己把控的安装程序，想过很多种途径去实现，有人说MFC可以实现，有人说C#可以实现，有人说Delphi可以实现，有人说VB又未尝不可呢。MFC，Delphi，VB，C#都需要自己去实现打包压缩，释放，释放过程中的业务逻辑跟界面功能，是一项比较麻烦的工作，甚至于C#程序需要运行的话，还需要装dotnet Framework的runtime。NSIS制作的安装包可以运行在Win9x下，完全是WinAPI的调用，不需要额外装任何的runtime，安装包双击就能运行，本身封装了很多Win的函数，方便调用与开放接口。功能部分也是实现了基本的安装过程所需的操作，NSIS的很多Editor做到了向导模式的脚本生成，很是方便。这么好的工具能否定制开发呢，答案是肯定的。</p></blockquote>
+
+<!--more-->
+
+
+<h2>本篇主要讲讲以下几点：</h2>
+
+<ul>
+<li><p><strong>如何消除普通的NSIS脚本生成的窗体的边框</strong></p></li>
+<li><p><strong>如何使得无边框窗体能够移动</strong></p></li>
+<li><p><strong>如何给这个窗体贴上一张大小合适的背景图</strong></p></li>
+</ul>
+
+
+<p><strong>所用到的NSIS插件：</strong></p>
+
+<ol>
+<li>nsdialogs</li>
+<li>nswindows</li>
+<li>winproc</li>
+<li>system</li>
+</ol>
+
+
+<p><strong>讲义</strong>：</p>
+
+<p><strong>首先贴出一个今天教程的完整的例子（附带图片） <a href="https://github.com/nicecai/nsissource/tree/master/2" title="新浪爱问分享">猛击这里</a></strong></p>
+
+<p><em>题外话，本来想用新浪爱问做文件分享平台的，发现上传后一直在审核中……练葵花宝典能力谁也比过性浪呀，用CSDN也不好，还要登录，本人就因为积分太少而不得不去做无聊的工作赢得积分，用于CSDN下载，自从CSDN把我的密码明码保存还被黑客给搞了之后，我不再上此网站。115虽然下载页广告多的一笔，但是后台上传页相当的干净，还不用审核以及无登陆下载，极致方便大家。(115被政府搞了，转性浪爱问)</em></p>
+
+<h3>modify:所有源码都转移到Github上面了</h3>
+
+<p><strong><em>使用时：把插件DLL跟头文件分别放入到你的NSIS本地对应的安装目录中，然后编译源码即可。</em></strong></p>
+
+<p>下文都用<code>%NSIS_Install_DIR%</code>来替代你本地安装路径</p>
+
+<h2>去除窗体Border</h2>
+
+<p>在去除窗体边框之前有一项工作是必须做的，那就是更改默认窗体的大小，因为每个人想做的打包窗体不可能都一样大，更改窗体大小有两种方法，也可以两种方法并用</p>
+
+<ul>
+<li><p><strong>修改NSIS内部的UI</strong></p>
+
+<p>  NSIS的默认UI放在<code>%NSIS_Install_DIR%\Contrib\UIs</code>中，其中常常见到的创建自定义窗体的
+<code>1018</code>，<code>1044</code>都在此路径的<code>modern.exe</code>中。我们只要修改<code>modern.exe</code>里面的资源文件即可，做过MFC的都知道，VC在创建程序的时候是有Resources的，只要找到一些能更改Resources里面Dialog的工具即可，本文推荐ResHacker 。</p>
+
+<p>  修改的时候宁可大点，也绝不小，因为开发过程中我遇到用<code>nsWindows</code>命令扩大窗体的时候，出现不起作用的情况，但是默认窗体比需要的窗体小的时候可以用<code>nsWindows</code>命令控制。</p>
+
+<p>  打开<code>ResHacker</code>工具拖入<code>modern.exe</code>，操作前请备份<code>modern.exe</code>，拖动资源窗体或者直接修改你想要的大小。默认的<code>1044</code>跟<code>1018</code>窗体都在<code>105</code>分类下。
+<img src="http://m1.img.libdd.com/farm5/57/1AB2FFFC269C4FB01C8802B4D88A2939_479_351.JPEG" title="exe查看工具图" alt="tu" />
+<img src="http://m2.img.libdd.com/farm4/7/E783172C1F7B203AE4F838ADFF9C8407_566_435.JPEG" title="exe查看工具图" alt="tu2" /></p></li>
+<li><strong>通过nsWindows命令</strong></li>
+</ul>
+
+
+<p>请看代码:</p>
+
+<pre><code>nsDialogs::Create 1044
+Pop $0
+${If} $0 == error
+    Abort
+${EndIf}
+SetCtlColors $0 ""  transparent ;背景设成透明
+${NSW_SetWindowSize} $HWNDPARENT 513 354 ;改变窗体大小
+${NSW_SetWindowSize} $0 513 354 ;改变Page大小
+</code></pre>
+
+<p>该脚本添加在自定义窗体的创建Function中，创建的是1044类型窗口，修改命令是两条，分别是对$HWNDPARENT的窗体跟创建的1044page的修改，确保默认的modern.exe的窗口大小比这个要大！
+修改好窗体大小后，直接在初始化的Function中直接填入以下代码即可去除边框</p>
+
+<pre><code>Function onGUIInit
+    ;消除边框
+    System::Call `user32::SetWindowLong(i$HWNDPARENT,i${GWL_STYLE},0x9480084C)i.R0`
+    ;隐藏一些既有控件
+    GetDlgItem $0 $HWNDPARENT 1034
+    ShowWindow $0 ${SW_HIDE}
+    GetDlgItem $0 $HWNDPARENT 1035
+    ShowWindow $0 ${SW_HIDE}
+    GetDlgItem $0 $HWNDPARENT 1036
+    ShowWindow $0 ${SW_HIDE}
+    GetDlgItem $0 $HWNDPARENT 1037
+    ShowWindow $0 ${SW_HIDE}
+    GetDlgItem $0 $HWNDPARENT 1038
+    ShowWindow $0 ${SW_HIDE}
+    GetDlgItem $0 $HWNDPARENT 1039
+    ShowWindow $0 ${SW_HIDE}
+    GetDlgItem $0 $HWNDPARENT 1256
+    ShowWindow $0 ${SW_HIDE}
+    GetDlgItem $0 $HWNDPARENT 1028
+    ShowWindow $0 ${SW_HIDE}
+FunctionEnd
+</code></pre>
+
+<p>用<code>System::Call</code>命令调用<code>SetWindowLong</code>的API函数改变<code>GWL_STYLE</code>的样式即可，<code>System</code>是NSIS官方插件用于帮助用户调用系统函数，是相当重要的自动安装程序的插件！程序中其余的代码是把创建的<code>1004</code>页面上其余的控件给隐藏掉，后面携带的ID都是可以通过<code>ResHacker</code>在<code>105</code>包中查询到。</p>
+
+<h2>贴一张大小合适的背景图</h2>
+
+<p>贴图需要用到nsDialogs插件的命令：</p>
+
+<pre><code>;贴背景大图
+${NSD_CreateBitmap} 0 0 100% 100% ""
+Pop $BGImage
+${NSD_SetImage} $BGImage $PLUGINSDIR\bg.bmp $ImageHandle
+
+${NSD_FreeImage} $ImageHandle
+</code></pre>
+
+<p><code>${NSD_CreateBitmap}</code>命令创建一个跟窗体一样大小的图片区域，后面的五个参数分别是<code>x</code>,<code>y</code>,<code>width</code>,<code>height</code>,<code>text</code>，坐标，宽高，文字。紧接着给这张图贴上一张合适的图片<code>bg.bmp</code>，贴图片之前需要把这个图片打包到安装程序中，这个是基本的操作，源码包中有，这里就不做说明了。最后还要通过<code>${NSD_FreeImage}</code>去释放该图片内存区。</p>
+
+<h2>无标题移动</h2>
+
+<p>做到无标题移动的潜台词是把原本传递给标题栏的<code>Message</code>通过你定义的元素回调传递给标题栏，所以只要给你添加的资源加上传递信息的回调函数就可以了。这里是通过<code>WinProc</code>这个插件完成的，<code>WinProc</code>这个插件在官方的插件库中没有，Google一下就可以查询到，这里的源码包中也有。除了<code>WinProc</code>，第三方插件<code>SkinBtn</code>也可以帮助实现。</p>
+
+<pre><code>Function onGUICallback
+  ${If} $MSG = ${WM_LBUTTONDOWN}
+    SendMessage $HWNDPARENT ${WM_NCLBUTTONDOWN} ${HTCAPTION} $0
+  ${EndIf}
+FunctionEnd
+</code></pre>
+
+<p>以上是回调函数，判断鼠标左键的Down事件，并且传递消息给标题栏。</p>
+
+<pre><code>GetFunctionAddress $0 onGUICallback
+WndProc::onCallback $BGImage $0 ;处理无边框窗体移动
+</code></pre>
+
+<p>以上是把当前的$BGImage作为回调主体，当用户左键点击$BGImage的时候，消息就传递给了窗体标题栏，实现了无边框的移动。</p>
+
+<p><strong>结束语</strong></p>
+
+<p>看看结果是什么样子的……哦！kugou也被我山寨了一把，有人精益求精，说，你的程序鼠标放在哪里都能移动，人家kugou只能标题栏移动……是的呀，你把图切成几份，分别贴，有的给回调函数，有的不给就实现了消息部分传递的功能。</p>
+
+<p><img src="http://m1.img.libdd.com/farm4/132/5E2C8AA789CBB8EC1CCF5D591DBFB784_517_352.JPEG" title="over pic" alt="over" /></p>
+
+<p>有一个注意点：贴图的时候注意了！代码的运行是自上而下，如果要贴的图需要在另一张上面的话，需要把代码写在前面。</p>
+
+<p>比如：</p>
+
+<pre><code>;贴小图
+${NSD_CreateBitmap} 0 34 100% 100% ""
+Pop $MiddleImage
+${NSD_SetImage} $MiddleImage $PLUGINSDIR\middle.bmp $ImageHandle
+
+;贴背景大图
+${NSD_CreateBitmap} 0 0 100% 100% ""
+Pop $BGImage
+${NSD_SetImage} $BGImage $PLUGINSDIR\bg.bmp $ImageHandle
+</code></pre>
+]]></content>
+  </entry>
+  
+</feed>

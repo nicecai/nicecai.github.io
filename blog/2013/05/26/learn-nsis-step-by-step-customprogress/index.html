@@ -1,0 +1,539 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>NSIS进阶教程(四) - 一个人的时间简史</title>
+  <meta name="author" content="烂菜">
+
+  
+  <meta name="description" content="自定义目录选择，自定义进度条，自定义图片切换效果 前言 上一节中我们已经处理了有关CheckBox自定义贴图的部分，但是目录选择的部分还没有加上，这节，我们先处理一下目录的选择部分，选择完路径之后就剩下安装了，于是进度条的创建的显得很有必要，但是系统的进度条创建简单， &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://nicecai.github.io/blog/2013/05/26/learn-nsis-step-by-step-customprogress">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="一个人的时间简史" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">一个人的时间简史</a></h1>
+  
+    <h2>陌上花开</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:nicecai.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/blog/about">About Me</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">NSIS进阶教程(四)</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-05-26T11:33:00+08:00" pubdate data-updated="true">May 26<span>th</span>, 2013</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h3>自定义目录选择，自定义进度条，自定义图片切换效果</h3>
+
+<h2>前言</h2>
+
+<blockquote><p>上一节中我们已经处理了有关CheckBox自定义贴图的部分，但是目录选择的部分还没有加上，这节，我们先处理一下目录的选择部分，选择完路径之后就剩下安装了，于是进度条的创建的显得很有必要，但是系统的进度条创建简单，如何改变进度条的背景色跟进度色呢，这节我们也处理掉。有关图片切换的效果的插件也有很多，但是大部分都是基于默认安装窗体进行的，如何在一个完全自定义的页面上面创建一个图片切换效果呢，这节也可以得到答案。</p></blockquote>
+
+<h2>本篇主要讲讲以下几点：</h2>
+
+<ul>
+<li><p><strong>创建目录选择按钮与文本框</strong></p></li>
+<li><p><strong>创建自定义的进度条</strong></p></li>
+<li><p><strong>创建图片切换效果</strong></p></li>
+</ul>
+
+
+<p><strong>所用到的插件【新增】：</strong></p>
+
+<ol>
+<li><p>WebCtrl</p></li>
+<li><p>SkinProgress</p></li>
+<li><p>BgWorker</p></li>
+</ol>
+
+
+<!--more-->
+
+
+<p><strong>讲义</strong></p>
+
+<p><strong>首先贴出今天教程的完整的例子【已测试】【附带图片】 <a href="https://github.com/nicecai/nsissource/tree/master/4" title="例子下载">猛击这里</a></strong></p>
+
+<p><em>这次的教程基本是安装界面的最后的阶段的处理了，主要是创建一个目录选择控件，用于确定安装程序安装的路径，在安装过程中等待时间也是比较长的，遇到打广告的好时机不要错过，切换多图是个不错的选择；在安装过程中，释放文件是一个主要动作。如果不是自定义页面，该动作是在系统的安装页面的Section里面完成的，如果不做多线程处理，该动作会阻塞主线程也就是主界面的消息传递，主界面没有了消息传递也就不会响应拖动、点击关闭等等操作，这个是本节主要说明的地方。最后说一下图片切换的实现，以我目前尝试的，效果最好的还算是直接放一张网页最实在，通过网页的js实现切换效果。</em></p>
+
+<h2>目录选择框</h2>
+
+<p>目录选择框包括一个文本框跟一个Button按钮，做过Web的人都知道，html中有一个file的控件与之相吻合，在form中则是两个不同的component，文本框很好创建，按钮的单击事件是一个重点，我们看看代码：</p>
+
+<pre><code>;更改目录控件创建
+    ${NSD_CreateDirRequest} 26 79 358 25 "$INSTDIR"
+    Pop $Txt_Browser
+    ${NSD_OnChange} $Txt_Browser OnChange_DirRequest
+
+    ${NSD_CreateBrowseButton} 400 79 88 25 ""
+    Pop $Btn_Browser
+    StrCpy $1 $Btn_Browser
+    Call SkinBtn_Browser
+    GetFunctionAddress $3 OnClick_BrowseButton
+      SkinBtn::onClick $1 $3
+</code></pre>
+
+<p>这里创建了一个<code>$Txt_Browser</code>的文本框，一个<code>$Btn_Browser</code>的按钮，其中按钮的单击事件是 <code>OnClick_BrowserButton</code>，看看按钮的事件代码:</p>
+
+<pre><code>Function OnClick_BrowseButton
+  Pop $0
+
+  Push $INSTDIR 
+  Call GetParent
+  Pop $R0
+
+  Push $INSTDIR
+  Push "\"
+  Call GetLastPart
+  Pop $R1
+
+  nsDialogs::SelectFolderDialog "请选择 $R0 安装的文件夹:" "$R0"
+  Pop $0
+  ${If} $0 == "error" 
+    Return
+  ${EndIf}
+  ${If} $0 != ""
+    StrCpy $INSTDIR "$0\$R1"
+    system::Call `user32::SetWindowText(i $Txt_Browser, t "$INSTDIR")`
+  ${EndIf}
+FunctionEnd
+
+;得到选中目录用于拼接安装程序名称
+Function GetParent
+  Exch $R0
+  Push $R1
+  Push $R2
+  Push $R3
+  StrCpy $R1 0
+  StrLen $R2 $R0
+  loop:
+    IntOp $R1 $R1 + 1
+    IntCmp $R1 $R2 get 0 get
+    StrCpy $R3 $R0 1 -$R1
+    StrCmp $R3 "\" get
+    Goto loop
+  get:
+    StrCpy $R0 $R0 -$R1
+    Pop $R3
+    Pop $R2
+    Pop $R1
+    Exch $R0
+FunctionEnd
+
+
+;截取选中目录
+Function GetLastPart
+  Exch $0 ; chop char
+  Exch
+  Exch $1 
+  Push $2
+  Push $3
+  StrCpy $2 0
+  loop:
+    IntOp $2 $2 - 1
+    StrCpy $3 $1 1 $2
+    StrCmp $3 "" 0 +3
+      StrCpy $0 ""
+      Goto exit2
+    StrCmp $3 $0 exit1
+    Goto loop
+  exit1:
+    IntOp $2 $2 + 1
+    StrCpy $0 $1 "" $2
+  exit2:
+    Pop $3
+    Pop $2
+    Pop $1
+    Exch $0 
+FunctionEnd
+</code></pre>
+
+<p>单击按钮的时候用<code>nsDialogs</code>创建一个<code>SelectFolderDialog</code>的对话框，选择需要安装的路径。<code>GetParent</code>方法主要是要取得当前选中的路径，<code>GetLastPart</code>主要是保留当前的安装程序最底层的目录名称，最终两个部分合起来作为整体的安装路径赋值给<code>$INSTDIR</code>。具体的效果可以运行源码查看。</p>
+
+<h2>创建自定义进度条</h2>
+
+<p><code>nsDialogs</code>有自带的进度条，该进度条的颜色是那种系统的颜色，如果遇到自己设计的，就会出现问题，于是用<code>SkinProgress</code>就可以给进度条赋上两张图片，一张是底图，一张是进度图，虽然不是非常的完美，比如圆角，比如透明，比如阴影，比如……但是已经是跟NSIS快捷脚本配合的很好的了。</p>
+
+<pre><code>${NSD_CreateProgressBar} 24 265 474 7 ""
+    Pop $PB_ProgressBar
+    SkinProgress::Set $PB_ProgressBar "$PLUGINSDIR\loading2.bmp" "$PLUGINSDIR\loading1.bmp"
+</code></pre>
+
+<p>用法非常简单，用<code>nsDialogs</code>创建一个<code>ProgressBar</code>，然后用<code>SkinProgress</code>去<code>set</code>一下，后面跟上两张图片。<code>ProgressBar</code>的图片是有讲究的，具体的可以看源码的image文件夹中两张图片的切图，基本要使用什么效果，自己做两张图就可以了。</p>
+
+<h2>创建图片切换</h2>
+
+<p>图片的切换有很多种，<code>gif</code>、<code>flash</code>、<code>js</code>、甚至自己用c++做插件实现，这里提供一种很方面，但是又不失功能强大的方式。网页的形式！你很容易能自己写一段js实现多张图片的切换，这里唯一要解决的就是如何在<code>Form</code>上创建一个浏览器用于加载自己的本地<code>html</code>页面。</p>
+
+<pre><code>System::Call `*(i,i,i,i)i(1,34,518,200).R0`
+    System::Call `user32::MapDialogRect(i$HWNDPARENT,iR0)`
+    System::Call `*$R0(i.s,i.s,i.s,i.s)`
+    System::Free $R0
+    FindWindow $R0 "#32770" "" $HWNDPARENT
+    System::Call `user32::CreateWindowEx(i,t"STATIC",in,i${DEFAULT_STYLES}|${SS_BLACKRECT},i1,i34,i518,i200,iR0,i1100,in,in)i.R0`
+    StrCpy $WebImg $R0
+    WebCtrl::ShowWebInCtrl $WebImg "$PLUGINSDIR/index.htm"
+</code></pre>
+
+<p>首先在界面上创建一个<code>STATIC</code>的对象(对话框)，通过<code>MapDialogRect</code>来定位该对话框的位置(<code>1,34</code>)，大小(<code>518,200</code>)，然后通过<code>WebCtrl</code>控件来把自己的网页<code>index.htm</code>加载进去，<code>WebCtrl</code>插件实现的就是调用本地浏览器。这里定位浏览器的位置以及大小是难点，还需多多熟悉才是。</p>
+
+<p>网页里面的代码我就不讲解了，主要是图片js切换，你也可以更换js代码，网络中很多效果都有。</p>
+
+<p>如果发现界面上的图片切换画面跟外边框有距离，就去查看网页里面的<code>css</code>，是否把<code>margin</code>跟<code>padding</code>都设成了0，这样就没有间隙了，看上去跟贴在form上面的一样。：）</p>
+
+<h2>多线程安装</h2>
+
+<p>界面都画好了，现在说到安装文件的时候释放了。源码中我是通过<code>sleep</code>来模拟的，具体的释放跟这个差不多。首先创建的是一个只运行一次的定时器<code>Timer</code>：</p>
+
+<pre><code>GetFunctionAddress $0 NSD_TimerFun
+    nsDialogs::CreateTimer $0 1
+</code></pre>
+
+<p>其中<code>nsDialogs::CreateTimer</code>后面的参数1代表的是1毫秒，正常情况下就是1毫秒执行一次<code>NSD_TimerFun</code>介个方法。</p>
+
+<pre><code>Function NSD_TimerFun
+    GetFunctionAddress $0 NSD_TimerFun
+    nsDialogs::KillTimer $0
+    !if 1   ;是否在后台运行,1有效
+        GetFunctionAddress $0 InstallationMainFun
+        BgWorker::CallAndWait
+    !else
+        Call InstallationMainFun
+    !endif
+FunctionEnd
+</code></pre>
+
+<p>本身定时器就是一个异步的功能，如果定时器是同步的，那就没有意义了对不，那么既然是异步的，为什么在<code>NSD_TimerFun</code>里面做<code>Sleep</code>操作的时候，主界面会卡死不响应呢。这个就要看看<code>nsDialogs</code>插件如何实现这个定时器的了，我也没有详查，应该不是创建子线程<code>Thread</code>的方式。</p>
+
+<p>这里如果抛弃<code>Timer</code>，直接使用<code>BgWorker</code>的话，也可以，但是会有一个缺陷：当你需要同时运行两个方法的时候，只有通过创建两个<code>Timer</code>来实现，并且在<code>Timer</code>调用的方法里面采用<code>BgWorker</code>来实现子线程操作。</p>
+
+<p>看看上面代码在<code>Timer</code>执行方法里面，第一步是停止<code>Timer</code>：因为我们只用了他的异步的特点，并没有想做定时器。然后使用<code>BgWorker</code>插件。</p>
+
+<p>使用<code>BgWorker</code>插件非常简单，只需用<code>$0</code>接收方法地址，然后调用<code>BgWorker::CallAndWait</code>。顾明思意，<code>BgWorker</code>调用过程是同步的，而且会<code>Wait</code>到<code>InstallationMainFun</code>方法执行结束，如果<code>BgWorker::CallAndWait</code>调用下面还有代码的话，只有在执行完<code>InstallationMainFun</code>方法后才能执行。</p>
+
+<p>下面看看<code>InstallationMainFun</code>的实现：</p>
+
+<pre><code>Function InstallationMainFun
+    SendMessage $PB_ProgressBar ${PBM_SETRANGE32} 0 100
+    SendMessage $PB_ProgressBar ${PBM_SETPOS} 10 0
+    Sleep 1000
+    SendMessage $PB_ProgressBar ${PBM_SETPOS} 20 0
+    Sleep 1000
+    SendMessage $PB_ProgressBar ${PBM_SETPOS} 30 0
+    Sleep 1000
+    SendMessage $PB_ProgressBar ${PBM_SETPOS} 40 0
+    Sleep 1000
+    SendMessage $PB_ProgressBar ${PBM_SETPOS} 50 0
+    Sleep 1000
+    SendMessage $PB_ProgressBar ${PBM_SETPOS} 60 0
+    Sleep 1000
+    SendMessage $PB_ProgressBar ${PBM_SETPOS} 70 0
+    Sleep 1000
+    SendMessage $PB_ProgressBar ${PBM_SETPOS} 80 0
+    Sleep 1000
+    SendMessage $PB_ProgressBar ${PBM_SETPOS} 90 0
+    Sleep 1000
+    SendMessage $PB_ProgressBar ${PBM_SETPOS} 100 0
+
+    ShowWindow $Btn_Next ${SW_SHOW}
+    ShowWindow $Btn_Install ${SW_HIDE}
+    EnableWindow $Btn_Cancel 0
+FunctionEnd
+</code></pre>
+
+<p>所做的工作主要是操作滚动条的位置。在实际的释放过程中，这个设置也是这样的，目前还没有自定义页面的释放插件，能回调得到精确的释放量，以及释放文件等等信息。所以只能模拟，尽可能的细化下来，估计着大概多少。这个是一个需要情商的工作，如果你有洁癖，偏执之类的病，我想你还是用系统自带的释放好了，也不需要自定义页面了 。</p>
+
+<p>最后上几张图吧，好看点，也算是阶段的结束 。</p>
+
+<p><strong>（安装过程）</strong></p>
+
+<p><img src="http://m1.img.libdd.com/farm4/2012/1123/00/EB4E0179E1715F0AB4E0B354AC1FCD44E54B5981D32F7_520_348.JPEG" title="安装过程" alt="&quot;安装过程&quot;" /></p>
+
+<p><strong>（安装过程结束）</strong></p>
+
+<p><img src="http://m1.img.libdd.com/farm4/2012/1123/00/DD53AE55D1C134F2DBA34352B3CBDE2A99D5FA1612537_518_348.JPEG" title="安装过程结束" alt="&quot;安装过程结束&quot;" /></p>
+
+<p><strong>（安装结束）</strong></p>
+
+<p><img src="http://m2.img.libdd.com/farm5/2012/1123/00/1B06AB3E30D4DB314BDBC49639B2D36D50F87B4D70553_518_346.JPEG" title="安装结束" alt="&quot;安装结束&quot;" /></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">烂菜</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-05-26T11:33:00+08:00" pubdate data-updated="true">May 26<span>th</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/nsis/'>NSIS</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://nicecai.github.io/blog/2013/05/26/learn-nsis-step-by-step-customprogress/" data-via="aaronckj" data-counturl="http://nicecai.github.io/blog/2013/05/26/learn-nsis-step-by-step-customprogress/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/05/26/learn-nsis-step-by-step-custommsgbox/" title="Previous Post: NSIS进阶教程(三)">&laquo; NSIS进阶教程(三)</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2013/05/26/nsis-slash-learn-nsis-step-by-step-setuponline/" title="Next Post: NSIS进阶教程(五)">NSIS进阶教程(五) &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>About Me</h1>
+<img src="/images/me.png"  alt="me"/>
+  <p>永远Beta</p>
+</section>
+<section>
+<h2>Reading&&Watching</h2>
+<div>
+<script type="text/javascript" src="http://www.douban.com/service/badge/pylife/?show=collection&amp;n=12&amp;columns=3&amp;hidelogo=yes" ></script>
+</div>
+</section><iframe width="100%" height="550" class="share_self"  frameborder="0" scrolling="no" src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=550&fansRow=2&ptype=1&speed=300&skin=2&isTitle=0&noborder=1&isWeibo=1&isFans=0&uid=1829155814&verifier=f1d7678d&dpc=1"></iframe>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/11/03/use-python-to-publish-e-book/">Use Python to Publish E-book</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/05/26/nsis-slash-learn-nsis-step-by-step-setuponline/">NSIS进阶教程(五)</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/05/26/learn-nsis-step-by-step-customprogress/">NSIS进阶教程(四)</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/05/26/learn-nsis-step-by-step-custommsgbox/">NSIS进阶教程(三)</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/05/25/learn-nsis-step-by-step-custombutton/">NSIS进阶教程(二)</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/nicecai">@nicecai</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'nicecai',
+            count: 1,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+<section class="googleplus">
+  <h1>
+    <a href="https://plus.google.com/aaronckj?rel=author">
+      <img src="http://www.google.com/images/icons/ui/gprofile_button-32.png" width="32" height="32">
+      Google+
+    </a>
+  </h1>
+</section>
+
+
+﻿<section>
+<h1>友情链接</h1>
+<a href="http://xwf.me">@桃花嘟嘟熊</a>
+<a href="http://blog.csdn.net/shuijing_0">@水晶石</a>
+</section>
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - 烂菜 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'hamletsoft';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://nicecai.github.io/blog/2013/05/26/learn-nsis-step-by-step-customprogress/';
+        var disqus_url = 'http://nicecai.github.io/blog/2013/05/26/learn-nsis-step-by-step-customprogress/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

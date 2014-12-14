@@ -1,0 +1,456 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>NSIS进阶教程(一) - 一个人的时间简史</title>
+  <meta name="author" content="烂菜">
+
+  
+  <meta name="description" content="自定义界面之无边框窗体移动贴图 前言 在Windows下，有很多人想做一个完全自己把控的安装程序，想过很多种途径去实现，有人说MFC可以实现，有人说C#可以实现，有人说Delphi可以实现，有人说VB又未尝不可呢。MFC，Delphi，VB，C#都需要自己去实现打包压缩，释放， &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://nicecai.github.io/blog/2013/05/24/learn-nsis-step-by-step-noborder">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="一个人的时间简史" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">一个人的时间简史</a></h1>
+  
+    <h2>陌上花开</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:nicecai.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/blog/about">About Me</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">NSIS进阶教程(一)</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-05-24T17:37:00+08:00" pubdate data-updated="true">May 24<span>th</span>, 2013</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h3>自定义界面之无边框窗体移动贴图</h3>
+
+<h2>前言</h2>
+
+<blockquote><p>在Windows下，有很多人想做一个完全自己把控的安装程序，想过很多种途径去实现，有人说MFC可以实现，有人说C#可以实现，有人说Delphi可以实现，有人说VB又未尝不可呢。MFC，Delphi，VB，C#都需要自己去实现打包压缩，释放，释放过程中的业务逻辑跟界面功能，是一项比较麻烦的工作，甚至于C#程序需要运行的话，还需要装dotnet Framework的runtime。NSIS制作的安装包可以运行在Win9x下，完全是WinAPI的调用，不需要额外装任何的runtime，安装包双击就能运行，本身封装了很多Win的函数，方便调用与开放接口。功能部分也是实现了基本的安装过程所需的操作，NSIS的很多Editor做到了向导模式的脚本生成，很是方便。这么好的工具能否定制开发呢，答案是肯定的。</p></blockquote>
+
+<!--more-->
+
+
+<h2>本篇主要讲讲以下几点：</h2>
+
+<ul>
+<li><p><strong>如何消除普通的NSIS脚本生成的窗体的边框</strong></p></li>
+<li><p><strong>如何使得无边框窗体能够移动</strong></p></li>
+<li><p><strong>如何给这个窗体贴上一张大小合适的背景图</strong></p></li>
+</ul>
+
+
+<p><strong>所用到的NSIS插件：</strong></p>
+
+<ol>
+<li>nsdialogs</li>
+<li>nswindows</li>
+<li>winproc</li>
+<li>system</li>
+</ol>
+
+
+<p><strong>讲义</strong>：</p>
+
+<p><strong>首先贴出一个今天教程的完整的例子（附带图片） <a href="https://github.com/nicecai/nsissource/tree/master/2" title="新浪爱问分享">猛击这里</a></strong></p>
+
+<p><em>题外话，本来想用新浪爱问做文件分享平台的，发现上传后一直在审核中……练葵花宝典能力谁也比过性浪呀，用CSDN也不好，还要登录，本人就因为积分太少而不得不去做无聊的工作赢得积分，用于CSDN下载，自从CSDN把我的密码明码保存还被黑客给搞了之后，我不再上此网站。115虽然下载页广告多的一笔，但是后台上传页相当的干净，还不用审核以及无登陆下载，极致方便大家。(115被政府搞了，转性浪爱问)</em></p>
+
+<h3>modify:所有源码都转移到Github上面了</h3>
+
+<p><strong><em>使用时：把插件DLL跟头文件分别放入到你的NSIS本地对应的安装目录中，然后编译源码即可。</em></strong></p>
+
+<p>下文都用<code>%NSIS_Install_DIR%</code>来替代你本地安装路径</p>
+
+<h2>去除窗体Border</h2>
+
+<p>在去除窗体边框之前有一项工作是必须做的，那就是更改默认窗体的大小，因为每个人想做的打包窗体不可能都一样大，更改窗体大小有两种方法，也可以两种方法并用</p>
+
+<ul>
+<li><p><strong>修改NSIS内部的UI</strong></p>
+
+<p>  NSIS的默认UI放在<code>%NSIS_Install_DIR%\Contrib\UIs</code>中，其中常常见到的创建自定义窗体的
+<code>1018</code>，<code>1044</code>都在此路径的<code>modern.exe</code>中。我们只要修改<code>modern.exe</code>里面的资源文件即可，做过MFC的都知道，VC在创建程序的时候是有Resources的，只要找到一些能更改Resources里面Dialog的工具即可，本文推荐ResHacker 。</p>
+
+<p>  修改的时候宁可大点，也绝不小，因为开发过程中我遇到用<code>nsWindows</code>命令扩大窗体的时候，出现不起作用的情况，但是默认窗体比需要的窗体小的时候可以用<code>nsWindows</code>命令控制。</p>
+
+<p>  打开<code>ResHacker</code>工具拖入<code>modern.exe</code>，操作前请备份<code>modern.exe</code>，拖动资源窗体或者直接修改你想要的大小。默认的<code>1044</code>跟<code>1018</code>窗体都在<code>105</code>分类下。
+<img src="http://m1.img.libdd.com/farm5/57/1AB2FFFC269C4FB01C8802B4D88A2939_479_351.JPEG" title="exe查看工具图" alt="tu" />
+<img src="http://m2.img.libdd.com/farm4/7/E783172C1F7B203AE4F838ADFF9C8407_566_435.JPEG" title="exe查看工具图" alt="tu2" /></p></li>
+<li><strong>通过nsWindows命令</strong></li>
+</ul>
+
+
+<p>请看代码:</p>
+
+<pre><code>nsDialogs::Create 1044
+Pop $0
+${If} $0 == error
+    Abort
+${EndIf}
+SetCtlColors $0 ""  transparent ;背景设成透明
+${NSW_SetWindowSize} $HWNDPARENT 513 354 ;改变窗体大小
+${NSW_SetWindowSize} $0 513 354 ;改变Page大小
+</code></pre>
+
+<p>该脚本添加在自定义窗体的创建Function中，创建的是1044类型窗口，修改命令是两条，分别是对$HWNDPARENT的窗体跟创建的1044page的修改，确保默认的modern.exe的窗口大小比这个要大！
+修改好窗体大小后，直接在初始化的Function中直接填入以下代码即可去除边框</p>
+
+<pre><code>Function onGUIInit
+    ;消除边框
+    System::Call `user32::SetWindowLong(i$HWNDPARENT,i${GWL_STYLE},0x9480084C)i.R0`
+    ;隐藏一些既有控件
+    GetDlgItem $0 $HWNDPARENT 1034
+    ShowWindow $0 ${SW_HIDE}
+    GetDlgItem $0 $HWNDPARENT 1035
+    ShowWindow $0 ${SW_HIDE}
+    GetDlgItem $0 $HWNDPARENT 1036
+    ShowWindow $0 ${SW_HIDE}
+    GetDlgItem $0 $HWNDPARENT 1037
+    ShowWindow $0 ${SW_HIDE}
+    GetDlgItem $0 $HWNDPARENT 1038
+    ShowWindow $0 ${SW_HIDE}
+    GetDlgItem $0 $HWNDPARENT 1039
+    ShowWindow $0 ${SW_HIDE}
+    GetDlgItem $0 $HWNDPARENT 1256
+    ShowWindow $0 ${SW_HIDE}
+    GetDlgItem $0 $HWNDPARENT 1028
+    ShowWindow $0 ${SW_HIDE}
+FunctionEnd
+</code></pre>
+
+<p>用<code>System::Call</code>命令调用<code>SetWindowLong</code>的API函数改变<code>GWL_STYLE</code>的样式即可，<code>System</code>是NSIS官方插件用于帮助用户调用系统函数，是相当重要的自动安装程序的插件！程序中其余的代码是把创建的<code>1004</code>页面上其余的控件给隐藏掉，后面携带的ID都是可以通过<code>ResHacker</code>在<code>105</code>包中查询到。</p>
+
+<h2>贴一张大小合适的背景图</h2>
+
+<p>贴图需要用到nsDialogs插件的命令：</p>
+
+<pre><code>;贴背景大图
+${NSD_CreateBitmap} 0 0 100% 100% ""
+Pop $BGImage
+${NSD_SetImage} $BGImage $PLUGINSDIR\bg.bmp $ImageHandle
+
+${NSD_FreeImage} $ImageHandle
+</code></pre>
+
+<p><code>${NSD_CreateBitmap}</code>命令创建一个跟窗体一样大小的图片区域，后面的五个参数分别是<code>x</code>,<code>y</code>,<code>width</code>,<code>height</code>,<code>text</code>，坐标，宽高，文字。紧接着给这张图贴上一张合适的图片<code>bg.bmp</code>，贴图片之前需要把这个图片打包到安装程序中，这个是基本的操作，源码包中有，这里就不做说明了。最后还要通过<code>${NSD_FreeImage}</code>去释放该图片内存区。</p>
+
+<h2>无标题移动</h2>
+
+<p>做到无标题移动的潜台词是把原本传递给标题栏的<code>Message</code>通过你定义的元素回调传递给标题栏，所以只要给你添加的资源加上传递信息的回调函数就可以了。这里是通过<code>WinProc</code>这个插件完成的，<code>WinProc</code>这个插件在官方的插件库中没有，Google一下就可以查询到，这里的源码包中也有。除了<code>WinProc</code>，第三方插件<code>SkinBtn</code>也可以帮助实现。</p>
+
+<pre><code>Function onGUICallback
+  ${If} $MSG = ${WM_LBUTTONDOWN}
+    SendMessage $HWNDPARENT ${WM_NCLBUTTONDOWN} ${HTCAPTION} $0
+  ${EndIf}
+FunctionEnd
+</code></pre>
+
+<p>以上是回调函数，判断鼠标左键的Down事件，并且传递消息给标题栏。</p>
+
+<pre><code>GetFunctionAddress $0 onGUICallback
+WndProc::onCallback $BGImage $0 ;处理无边框窗体移动
+</code></pre>
+
+<p>以上是把当前的$BGImage作为回调主体，当用户左键点击$BGImage的时候，消息就传递给了窗体标题栏，实现了无边框的移动。</p>
+
+<p><strong>结束语</strong></p>
+
+<p>看看结果是什么样子的……哦！kugou也被我山寨了一把，有人精益求精，说，你的程序鼠标放在哪里都能移动，人家kugou只能标题栏移动……是的呀，你把图切成几份，分别贴，有的给回调函数，有的不给就实现了消息部分传递的功能。</p>
+
+<p><img src="http://m1.img.libdd.com/farm4/132/5E2C8AA789CBB8EC1CCF5D591DBFB784_517_352.JPEG" title="over pic" alt="over" /></p>
+
+<p>有一个注意点：贴图的时候注意了！代码的运行是自上而下，如果要贴的图需要在另一张上面的话，需要把代码写在前面。</p>
+
+<p>比如：</p>
+
+<pre><code>;贴小图
+${NSD_CreateBitmap} 0 34 100% 100% ""
+Pop $MiddleImage
+${NSD_SetImage} $MiddleImage $PLUGINSDIR\middle.bmp $ImageHandle
+
+;贴背景大图
+${NSD_CreateBitmap} 0 0 100% 100% ""
+Pop $BGImage
+${NSD_SetImage} $BGImage $PLUGINSDIR\bg.bmp $ImageHandle
+</code></pre>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">烂菜</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-05-24T17:37:00+08:00" pubdate data-updated="true">May 24<span>th</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/nsis/'>NSIS</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://nicecai.github.io/blog/2013/05/24/learn-nsis-step-by-step-noborder/" data-via="aaronckj" data-counturl="http://nicecai.github.io/blog/2013/05/24/learn-nsis-step-by-step-noborder/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+      
+        <a class="basic-alignment right" href="/blog/2013/05/25/learn-nsis-step-by-step-custombutton/" title="Next Post: NSIS进阶教程(二)">NSIS进阶教程(二) &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>About Me</h1>
+<img src="/images/me.png"  alt="me"/>
+  <p>永远Beta</p>
+</section>
+<section>
+<h2>Reading&&Watching</h2>
+<div>
+<script type="text/javascript" src="http://www.douban.com/service/badge/pylife/?show=collection&amp;n=12&amp;columns=3&amp;hidelogo=yes" ></script>
+</div>
+</section><iframe width="100%" height="550" class="share_self"  frameborder="0" scrolling="no" src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=550&fansRow=2&ptype=1&speed=300&skin=2&isTitle=0&noborder=1&isWeibo=1&isFans=0&uid=1829155814&verifier=f1d7678d&dpc=1"></iframe>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/11/03/use-python-to-publish-e-book/">Use Python to Publish E-book</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/05/26/nsis-slash-learn-nsis-step-by-step-setuponline/">NSIS进阶教程(五)</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/05/26/learn-nsis-step-by-step-customprogress/">NSIS进阶教程(四)</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/05/26/learn-nsis-step-by-step-custommsgbox/">NSIS进阶教程(三)</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/05/25/learn-nsis-step-by-step-custombutton/">NSIS进阶教程(二)</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/nicecai">@nicecai</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'nicecai',
+            count: 1,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+<section class="googleplus">
+  <h1>
+    <a href="https://plus.google.com/aaronckj?rel=author">
+      <img src="http://www.google.com/images/icons/ui/gprofile_button-32.png" width="32" height="32">
+      Google+
+    </a>
+  </h1>
+</section>
+
+
+﻿<section>
+<h1>友情链接</h1>
+<a href="http://xwf.me">@桃花嘟嘟熊</a>
+<a href="http://blog.csdn.net/shuijing_0">@水晶石</a>
+</section>
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - 烂菜 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'hamletsoft';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://nicecai.github.io/blog/2013/05/24/learn-nsis-step-by-step-noborder/';
+        var disqus_url = 'http://nicecai.github.io/blog/2013/05/24/learn-nsis-step-by-step-noborder/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

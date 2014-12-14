@@ -1,1 +1,566 @@
-'My Octopress Page is coming soon &hellip;' 
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>一个人的时间简史</title>
+  <meta name="author" content="烂菜">
+
+  
+  <meta name="description" content="
+">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://nicecai.github.io">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="一个人的时间简史" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">一个人的时间简史</a></h1>
+  
+    <h2>陌上花开</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:nicecai.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/blog/about">About Me</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/11/03/use-python-to-publish-e-book/">Use Python to Publish E-book</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-11-03T17:41:00+08:00" pubdate data-updated="true">Nov 3<span>rd</span>, 2014</time>
+        
+         | <a href="/blog/2014/11/03/use-python-to-publish-e-book/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content">
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/05/26/nsis-slash-learn-nsis-step-by-step-setuponline/">NSIS进阶教程(五)</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-05-26T12:24:00+08:00" pubdate data-updated="true">May 26<span>th</span>, 2013</time>
+        
+         | <a href="/blog/2013/05/26/nsis-slash-learn-nsis-step-by-step-setuponline/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h3>在线下载，下载后的安装，本地解压安装</h3>
+
+<h2>前言</h2>
+
+<blockquote><p>想做在线安装包教程已经很久了，一直找不到合适的时间，如今在一个慵懒的周末早晨终于开始了。今天晚上还要去虹口体育场看申花跟国安的比赛，还是要抓紧时间呀。
+在线安装是以前教程的一个延续。</p>
+
+<p><strong><code>意义一：</code></strong>国内很多的IT厂商在做安装包的时候首先考虑的是用户下载的时间可接受度，而一个动辄100mb的包会把用户吓跑，而且下载的入口还控制在诸如迅雷，旋风，IE，等等，稍等，还有360安全浏览器。。。你如果没有给360打个招呼，它说不定会报你的程序有毒。。。太可拍了。入口最重要，掌握在任何人手里都会成为收门票的工具。</p>
+
+<p><strong><code>意义二：</code></strong>用户对着迅雷，旋风的界面，千遍一律，没有任何信息的展示，就是一个进度条，你丧失了在第一时间占领用户意识的契机。如果你在安装的时候有动画播放，并且让用户在安装的过程中获取产品的使用技巧，或者像广告植入一样的严肃的对待这个不起眼的时间，你会收获很多。</p></blockquote>
+
+<h2>本篇主要讲讲以下几点：</h2>
+
+<ul>
+<li><p><strong>在线下载</strong></p></li>
+<li><p><strong>下载后的安装</strong></p></li>
+<li><p><strong>下载后的解压</strong></p></li>
+</ul>
+
+
+<p><strong>所用到的插件【新增】：</strong></p>
+
+<ol>
+<li>inetc</li>
+<li>nsis7z</li>
+</ol>
+
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/05/26/nsis-slash-learn-nsis-step-by-step-setuponline/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/05/26/learn-nsis-step-by-step-customprogress/">NSIS进阶教程(四)</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-05-26T11:33:00+08:00" pubdate data-updated="true">May 26<span>th</span>, 2013</time>
+        
+         | <a href="/blog/2013/05/26/learn-nsis-step-by-step-customprogress/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h3>自定义目录选择，自定义进度条，自定义图片切换效果</h3>
+
+<h2>前言</h2>
+
+<blockquote><p>上一节中我们已经处理了有关CheckBox自定义贴图的部分，但是目录选择的部分还没有加上，这节，我们先处理一下目录的选择部分，选择完路径之后就剩下安装了，于是进度条的创建的显得很有必要，但是系统的进度条创建简单，如何改变进度条的背景色跟进度色呢，这节我们也处理掉。有关图片切换的效果的插件也有很多，但是大部分都是基于默认安装窗体进行的，如何在一个完全自定义的页面上面创建一个图片切换效果呢，这节也可以得到答案。</p></blockquote>
+
+<h2>本篇主要讲讲以下几点：</h2>
+
+<ul>
+<li><p><strong>创建目录选择按钮与文本框</strong></p></li>
+<li><p><strong>创建自定义的进度条</strong></p></li>
+<li><p><strong>创建图片切换效果</strong></p></li>
+</ul>
+
+
+<p><strong>所用到的插件【新增】：</strong></p>
+
+<ol>
+<li><p>WebCtrl</p></li>
+<li><p>SkinProgress</p></li>
+<li><p>BgWorker</p></li>
+</ol>
+
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/05/26/learn-nsis-step-by-step-customprogress/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/05/26/learn-nsis-step-by-step-custommsgbox/">NSIS进阶教程(三)</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-05-26T11:09:00+08:00" pubdate data-updated="true">May 26<span>th</span>, 2013</time>
+        
+         | <a href="/blog/2013/05/26/learn-nsis-step-by-step-custommsgbox/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h3>自定义MessageBox，自定义页跳转，自定义CheckBox样式</h3>
+
+<h2>前言</h2>
+
+<blockquote><p>上一节中我们处理了Button的自定义以及Button的事件消息、协议框的创建等等，这节中我们要更加完美的要求我们的提示框也要漂亮，CheckBox也要自定义样式。有人说MessageBox在NSIS默认情况下是带边框的API窗口，是一个比较丑雏形，但是NSIS的nsDialogs插件也没有提供一个可以创建弹出窗的命令行呀，CheckBox系统自带的只能是那个默认的皮肤，如果想把CheckBox的背景改成蓝色，或者把CheckBox的勾改成爱心，把叉改成骷髅头如何去做呢？这些问题在任何一个面向对象的编程语言中都可以很容易实现，在NSIS这样局限的环境中也可以变通实现，接下来我们处理一下这些问题。</p></blockquote>
+
+<h2>本篇主要讲讲以下几点：</h2>
+
+<ul>
+<li><p><strong>如何抛弃系统的MessageBox</strong></p></li>
+<li><p><strong>如何实现自定义页面的跳转</strong></p></li>
+<li><p><strong>如何用自己的贴图实现CheckBox功能</strong></p></li>
+</ul>
+
+
+<p><strong>所用到的插件【新增】：</strong></p>
+
+<ol>
+<li><p>FindProcDLL（查找当前进程插件）</p></li>
+<li><p>KillProcDLL （关闭指定进程插件）</p></li>
+</ol>
+
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/05/26/learn-nsis-step-by-step-custommsgbox/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/05/25/learn-nsis-step-by-step-custombutton/">NSIS进阶教程(二)</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-05-25T13:23:00+08:00" pubdate data-updated="true">May 25<span>th</span>, 2013</time>
+        
+         | <a href="/blog/2013/05/25/learn-nsis-step-by-step-custombutton/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h3>自定义界面之Button、License窗口实现</h3>
+
+<h2>前言</h2>
+
+<blockquote><p>在上一节中我们粗略的处理一下无边框窗体、背景贴图、鼠标移动。这节主要是创建用于响应事件的Button以及能展示软件License的窗口，还能用Button控制软件协议的展示与否。
+代码还是延续上一节的。</p></blockquote>
+
+<h2>本篇主要讲讲以下几点：</h2>
+
+<ul>
+<li><p><strong>如何创建一个自己的按钮</strong></p></li>
+<li><p><strong>如何创建一个自己的License窗口</strong></p></li>
+<li><p><strong>如何用自己的按钮控制自己的License窗口事件</strong></p></li>
+</ul>
+
+
+<p><strong>所用到的插件：</strong></p>
+
+<ol>
+<li><p>nsDialogs</p></li>
+<li><p>SkinBtn</p></li>
+</ol>
+
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/05/25/learn-nsis-step-by-step-custombutton/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/05/24/learn-nsis-step-by-step-noborder/">NSIS进阶教程(一)</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-05-24T17:37:00+08:00" pubdate data-updated="true">May 24<span>th</span>, 2013</time>
+        
+         | <a href="/blog/2013/05/24/learn-nsis-step-by-step-noborder/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h3>自定义界面之无边框窗体移动贴图</h3>
+
+<h2>前言</h2>
+
+<blockquote><p>在Windows下，有很多人想做一个完全自己把控的安装程序，想过很多种途径去实现，有人说MFC可以实现，有人说C#可以实现，有人说Delphi可以实现，有人说VB又未尝不可呢。MFC，Delphi，VB，C#都需要自己去实现打包压缩，释放，释放过程中的业务逻辑跟界面功能，是一项比较麻烦的工作，甚至于C#程序需要运行的话，还需要装dotnet Framework的runtime。NSIS制作的安装包可以运行在Win9x下，完全是WinAPI的调用，不需要额外装任何的runtime，安装包双击就能运行，本身封装了很多Win的函数，方便调用与开放接口。功能部分也是实现了基本的安装过程所需的操作，NSIS的很多Editor做到了向导模式的脚本生成，很是方便。这么好的工具能否定制开发呢，答案是肯定的。</p></blockquote>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/05/24/learn-nsis-step-by-step-noborder/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  <div class="pagination">
+    
+    <a href="/blog/archives">Blog Archives</a>
+    
+  </div>
+</div>
+<aside class="sidebar">
+  
+    <section>
+  <h1>About Me</h1>
+<img src="/images/me.png"  alt="me"/>
+  <p>永远Beta</p>
+</section>
+<section>
+<h2>Reading&&Watching</h2>
+<div>
+<script type="text/javascript" src="http://www.douban.com/service/badge/pylife/?show=collection&amp;n=12&amp;columns=3&amp;hidelogo=yes" ></script>
+</div>
+</section><iframe width="100%" height="550" class="share_self"  frameborder="0" scrolling="no" src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=550&fansRow=2&ptype=1&speed=300&skin=2&isTitle=0&noborder=1&isWeibo=1&isFans=0&uid=1829155814&verifier=f1d7678d&dpc=1"></iframe>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/11/03/use-python-to-publish-e-book/">Use Python to Publish E-book</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/05/26/nsis-slash-learn-nsis-step-by-step-setuponline/">NSIS进阶教程(五)</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/05/26/learn-nsis-step-by-step-customprogress/">NSIS进阶教程(四)</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/05/26/learn-nsis-step-by-step-custommsgbox/">NSIS进阶教程(三)</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/05/25/learn-nsis-step-by-step-custombutton/">NSIS进阶教程(二)</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating&#8230;</li>
+  </ul>
+  
+  <a href="https://github.com/nicecai">@nicecai</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'nicecai',
+            count: 1,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+<section class="googleplus">
+  <h1>
+    <a href="https://plus.google.com/aaronckj?rel=author">
+      <img src="http://www.google.com/images/icons/ui/gprofile_button-32.png" width="32" height="32">
+      Google+
+    </a>
+  </h1>
+</section>
+
+
+﻿<section>
+<h1>友情链接</h1>
+<a href="http://xwf.me">@桃花嘟嘟熊</a>
+<a href="http://blog.csdn.net/shuijing_0">@水晶石</a>
+</section>
+  
+</aside>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - 烂菜 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'hamletsoft';
+      
+        
+        var disqus_script = 'count.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
